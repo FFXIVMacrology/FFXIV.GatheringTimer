@@ -38,24 +38,5 @@ namespace GatheringTimer.Data
         {
             return await Updater.SyncRaw();
         }
-
-        public static async Task<List<Item>> Search(String searchStr) {
-            return await Service.Search(searchStr);
-        
-        }
-
-        public static async Task<List<Model.Vo.DisplayVo.Item>> SearchDetail(String searchStr)
-        {
-            try
-            {
-                int.Parse(searchStr);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-            return await Service.SearchDetail(int.Parse(searchStr));
-
-        }
     }
 }

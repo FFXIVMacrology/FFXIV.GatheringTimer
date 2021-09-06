@@ -62,7 +62,7 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
 
         public List<TimeConditionExtension> TimeConditionExtension { get; set; }
 
-        public GatheringPoint GatheringPoint { get; set; }
+        public List<GatheringPoint> GatheringPoint { get; set; }
     }
 
     public class GatheringPoint

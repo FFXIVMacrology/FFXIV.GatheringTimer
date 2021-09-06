@@ -11,8 +11,8 @@ using System.Reflection;
 using System.Xml;
 using GatheringTimer.Data;
 
-[assembly: AssemblyTitle("Gathering Timer")]
-[assembly: AssemblyDescription("Gathering Timer")]
+[assembly: AssemblyTitle("GatheringTimer")]
+[assembly: AssemblyDescription("GatheringTimer")]
 [assembly: AssemblyCompany("ErinnerMO")]
 [assembly: AssemblyVersion("0.0.0.1")]
 
@@ -98,7 +98,8 @@ namespace GatheringTimer
             this.itemList.Name = "itemList";
             this.itemList.Size = new System.Drawing.Size(431, 172);
             this.itemList.TabIndex = 7;
-            this.itemList.SelectedIndexChanged += new System.EventHandler(this.ItemList_SelectedIndexChanged);
+            this.itemList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ItemList_MouseDoubleClick);
+            this.itemList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ItemList_MouseDoubleClick);
             // 
             // GatheringTimerForm
             // 
@@ -214,6 +215,11 @@ namespace GatheringTimer
             xWriter.Close();
         }
 
+        private void GatheringTimerForm_Load(object sender, EventArgs e)
+        {
+            Logger.SetTextBox(this.textBoxLogger);
+        }
+
         private bool syncDataStatus = true;
         public object syncDataLock = new object();
         private async void SyncData_Click(object sender, EventArgs e)
@@ -241,19 +247,15 @@ namespace GatheringTimer
             }
         }
 
-        private int SearchBox_TextChanged_Limit = 0;
         private async void SearchBox_TextChanged(object sender, EventArgs e)
         {
-
-            if (0 == SearchBox_TextChanged_Limit)
+            if ("" == searchBox.Text)
             {
-                searchBox.Text = "";
-                SearchBox_TextChanged_Limit = 1;
+                this.itemList.Items.Clear();
             }
             else
             {
-                await GatheringTimer.Search(this, searchBox.Text);
-
+                await GatheringTimer.GetItem(this, searchBox.Text);
             }
 
         }
@@ -265,21 +267,22 @@ namespace GatheringTimer
             {
                 foreach (T item in itemList)
                 {
-                    this.itemList.Items.Add(item.GetType().GetProperty("Name_chs").GetValue(item).ToString());
+                    this.itemList.Items.Add(item);
                 }
+                this.itemList.ValueMember = "ID";
+                this.itemList.DisplayMember = "Name_chs";
             }
-
         }
 
-        private void ItemList_SelectedIndexChanged(object sender, EventArgs e)
+        private void ItemList_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-
+            int index = this.itemList.IndexFromPoint(e.Location);
+            if (index != System.Windows.Forms.ListBox.NoMatches)
+            {
+                MessageBox.Show(this.itemList.Items[index].GetType().GetProperty("ID").GetValue(this.itemList.Items[index]).ToString());
+            }
         }
 
-        private void GatheringTimerForm_Load(object sender, EventArgs e)
-        {
-            Logger.SetTextBox(this.textBoxLogger);
-        }
     }
 
 }

@@ -356,6 +356,10 @@ namespace GatheringTimer.Data.Database
                 if (key.ToLowerInvariant().Equals("id")) columns += " PRIMARY KEY";
 
             }
+            if (!(columns.Length > 0))
+            {
+                throw new Exception("Table " + tableName + " column is empty!");
+            }
             List<String> sqlList = new List<String>();
             String sql = "CREATE TABLE IF NOT EXISTS " + tableName + "(" + columns + ")";
             sqlList.Add(sql);
@@ -683,7 +687,7 @@ namespace GatheringTimer.Data.Database
             }
         }
 
-        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t,List<string> conditionKeywordList,int? limit)
+        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t, List<string> conditionKeywordList, int? limit)
         {
 
             List<string> columns = new List<string>();
@@ -700,7 +704,8 @@ namespace GatheringTimer.Data.Database
                     Type columnType = valueObj.GetType();
                     if (columnType.IsValueType || columnType == typeof(string))
                     {
-                        if (!(propertyInfo.GetType() == typeof(int) && int.Parse(t.GetType().GetProperty(propertyInfo.Name).GetValue(t).ToString()) == 0 && "ID".Equals(propertyInfo.Name))) {
+                        if (!(propertyInfo.GetType() == typeof(int) && int.Parse(t.GetType().GetProperty(propertyInfo.Name).GetValue(t).ToString()) == 0 && "ID".Equals(propertyInfo.Name)))
+                        {
                             columns.Add(name);
                             values.Add(t.GetType().GetProperty(name).GetValue(t).ToString());
                         }
@@ -713,11 +718,12 @@ namespace GatheringTimer.Data.Database
                 Logger.Error("ConditionColumnList is not contained with list column", null);
                 return null;
             }
-            else if(!IsContains(columns, conditionColumnList))
+            else if (!IsContains(columns, conditionColumnList))
             {
                 Logger.Error("Columns of T is not contained with conditionColumnList", null);
                 return null;
-            } else if(conditionColumnList.Count != conditionList.Count)
+            }
+            else if (conditionColumnList.Count != conditionList.Count)
             {
                 Logger.Error("ConditionColumnList is not matching conditionList", null);
                 return null;
@@ -727,7 +733,8 @@ namespace GatheringTimer.Data.Database
 
             for (int i = 0; i < conditionColumnList.Count; i++)
             {
-                if (0 == i) {
+                if (0 == i)
+                {
                     conditionString.Append(" WHERE ");
                 }
                 conditionString.Append(conditionColumnList[i]);
@@ -736,29 +743,32 @@ namespace GatheringTimer.Data.Database
                 conditionString.Append(" ");
                 if (conditionList[i].ToLowerInvariant().Equals("like"))
                 {
-                    conditionString.Append("\"%"+ values[i]+ "%\"");
+                    conditionString.Append("\"%" + values[i] + "%\"");
                 }
-                else {
+                else
+                {
                     conditionString.Append(values[i]);
 
                 }
 
-                if (conditionColumnList.Count -1 != i)
+                if (conditionColumnList.Count - 1 != i)
                 {
                     conditionString.Append(" ");
                     if (null != conditionKeywordList)
                     {
                         conditionString.Append(conditionKeywordList[i]);
                     }
-                    else {
+                    else
+                    {
                         conditionString.Append("AND");
                     }
                     conditionString.Append(" ");
                 }
             }
 
-            if (limit != null) {
-                conditionString.Append(" Limit "+limit);
+            if (limit != null)
+            {
+                conditionString.Append(" Limit " + limit);
             }
 
             String sql = "Select * From " + t.GetType().Name + conditionString.ToString() + ";";
@@ -779,18 +789,21 @@ namespace GatheringTimer.Data.Database
 
         }
 
-        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t) {
+        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t)
+        {
             return await Select<T>(conditionColumnList, conditionList, t, null, null);
         }
 
         public async Task<List<T>> Select<T>(List<string> conditionList, T t)
         {
             List<string> conditionColumnList = new List<string>();
-            foreach (PropertyInfo propertyInfo in t.GetType().GetProperties()) {
-                if (!(propertyInfo.GetType() == typeof(int)&& int.Parse(t.GetType().GetProperty(propertyInfo.Name).GetValue(t).ToString())==0&&"ID".Equals(propertyInfo.Name)))
+            foreach (PropertyInfo propertyInfo in t.GetType().GetProperties())
+            {
+                if (!(propertyInfo.GetType() == typeof(int) && int.Parse(t.GetType().GetProperty(propertyInfo.Name).GetValue(t).ToString()) == 0 && "ID".Equals(propertyInfo.Name)))
                 {
                     object obj = t.GetType().GetProperty(propertyInfo.Name).GetValue(t);
-                    if (null!=obj&& !"".Equals(obj.ToString().Trim())) {
+                    if (null != obj && !"".Equals(obj.ToString().Trim()))
+                    {
                         conditionColumnList.Add(propertyInfo.Name);
                     }
                 }

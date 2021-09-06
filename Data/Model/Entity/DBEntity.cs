@@ -189,24 +189,24 @@ namespace GatheringTimer.Data.Model.Entity
 
     public class FavouriteItem {
 
-        private String ID;
+        public String Id { get; set; }
 
-        private String itemId;
+        public String itemId { get; set; }
     }
 
     public class FavouritePoint
     {
 
-        private String ID;
+        public String Id { get; set; }
 
-        private String PointBaseId;
+        public String PointBaseId { get; set; }
     }
 
     public class TimerEnable {
 
-        private String ID;
+        public String Id { get; set; }
 
-        private String PointBaseId;
+        public String PointBaseId{ get; set; }
 
     }
 
