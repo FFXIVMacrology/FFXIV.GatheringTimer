@@ -20,20 +20,9 @@ namespace GatheringTimer
 
     }
 
-    interface IGatheringTimerService
-    {
-
-        Task<List<Data.Model.Vo.DisplayVo.Item>> GetItems(GatheringTimerForm gatheringTimerForm, String searchStr);
-
-        Task<List<Data.Model.Vo.DisplayVo.Item>> GetItemDetail(GatheringTimerForm gatheringTimerForm, String itemId);
-
-
-    }
-
-
     public class GatheringTimer
     {
-        public static async Task GetItem(GatheringTimerForm gatheringTimerForm, String searchStr)
+        public static async Task GetItems(GatheringTimerForm gatheringTimerForm, String searchStr)
         {
 
             try
@@ -48,13 +37,13 @@ namespace GatheringTimer
 
         }
 
-        public static async Task GetItems(GatheringTimerForm gatheringTimerForm, String searchStr)
+        public static async Task GetItemDetail(GatheringTimerForm gatheringTimerForm, int itemID)
         {
 
             try
             {
-                List<Data.Model.Vo.DisplayVo.Item> items = await Service.GetItemDetail(int.Parse(searchStr));
-                gatheringTimerForm.ItemList_SetContent(items);
+                Data.Model.Vo.DisplayVo.Item item = await Service.GetItemDetail(itemID);
+                gatheringTimerForm.DetailList_SetContent(item);
             }
             catch (Exception ex)
             {

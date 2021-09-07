@@ -20,6 +20,7 @@ namespace GatheringTimer
 
         private static List<Item> itemCache = default;
         private static List<GatheringItem> gatheringItemCache = default;
+        private static List<SpearfishingItem> spearfishingItemCache = default;
         private static List<GatheringPointBase> gatheringPointBaseCache = default;
         private static List<GatheringPointBaseExtension> gatheringPointBaseExtensionCache = default;
         private static List<TimeConditionExtension> timeConditionExtensionCache = default;
@@ -95,91 +96,114 @@ namespace GatheringTimer
             return sqliteDatabase;
         }
 
-        public static async Task LoadSource()
+        public static async Task LoadSource(bool force)
         {
-            if (DatabaseInitialization()) {
-                itemCache = await sqliteDatabase.Select<Item>(new List<string>(), new Item());
-                gatheringItemCache = await sqliteDatabase.Select<GatheringItem>(new List<string>(), new GatheringItem());
-                gatheringPointBaseCache = await sqliteDatabase.Select<GatheringPointBase>(new List<string>(), new GatheringPointBase());
-                gatheringPointBaseExtensionCache = await sqliteDatabase.Select<GatheringPointBaseExtension>(new List<string>(), new GatheringPointBaseExtension());
-                timeConditionExtensionCache = await sqliteDatabase.Select<TimeConditionExtension>(new List<string>(), new TimeConditionExtension());
-                gatheringPointCache = await sqliteDatabase.Select<GatheringPoint>(new List<string>(), new GatheringPoint());
-                placeNameCache = await sqliteDatabase.Select<PlaceName>(new List<string>(), new PlaceName());
-                territoryTypeCache = await sqliteDatabase.Select<TerritoryType>(new List<string>(), new TerritoryType());
-                mapCache = await sqliteDatabase.Select<Map>(new List<string>(), new Map());
+            if (DatabaseInitialization())
+            {
+                if (force)
+                {
+                    itemCache = await sqliteDatabase.Select<Item>(new List<string>(), new Item());
+                    gatheringItemCache = await sqliteDatabase.Select<GatheringItem>(new List<string>(), new GatheringItem());
+                    spearfishingItemCache = await sqliteDatabase.Select<SpearfishingItem>(new List<string>(), new SpearfishingItem());
+                    gatheringPointBaseCache = await sqliteDatabase.Select<GatheringPointBase>(new List<string>(), new GatheringPointBase());
+                    gatheringPointBaseExtensionCache = await sqliteDatabase.Select<GatheringPointBaseExtension>(new List<string>(), new GatheringPointBaseExtension());
+                    timeConditionExtensionCache = await sqliteDatabase.Select<TimeConditionExtension>(new List<string>(), new TimeConditionExtension());
+                    gatheringPointCache = await sqliteDatabase.Select<GatheringPoint>(new List<string>(), new GatheringPoint());
+                    placeNameCache = await sqliteDatabase.Select<PlaceName>(new List<string>(), new PlaceName());
+                    territoryTypeCache = await sqliteDatabase.Select<TerritoryType>(new List<string>(), new TerritoryType());
+                    mapCache = await sqliteDatabase.Select<Map>(new List<string>(), new Map());
+                }
+                else
+                {
+                    itemCache = itemCache ?? await sqliteDatabase.Select<Item>(new List<string>(), new Item());
+                    gatheringItemCache = gatheringItemCache ?? await sqliteDatabase.Select<GatheringItem>(new List<string>(), new GatheringItem());
+                    spearfishingItemCache = spearfishingItemCache ?? await sqliteDatabase.Select<SpearfishingItem>(new List<string>(), new SpearfishingItem());
+                    gatheringPointBaseCache = gatheringPointBaseCache ?? await sqliteDatabase.Select<GatheringPointBase>(new List<string>(), new GatheringPointBase());
+                    gatheringPointBaseExtensionCache = gatheringPointBaseExtensionCache ?? await sqliteDatabase.Select<GatheringPointBaseExtension>(new List<string>(), new GatheringPointBaseExtension());
+                    timeConditionExtensionCache = timeConditionExtensionCache ?? await sqliteDatabase.Select<TimeConditionExtension>(new List<string>(), new TimeConditionExtension());
+                    gatheringPointCache = gatheringPointCache ?? await sqliteDatabase.Select<GatheringPoint>(new List<string>(), new GatheringPoint());
+                    placeNameCache = placeNameCache ?? await sqliteDatabase.Select<PlaceName>(new List<string>(), new PlaceName());
+                    territoryTypeCache = territoryTypeCache ?? await sqliteDatabase.Select<TerritoryType>(new List<string>(), new TerritoryType());
+                    mapCache = mapCache ?? await sqliteDatabase.Select<Map>(new List<string>(), new Map());
+                }
+
             }
         }
 
         public static async Task<List<Data.Model.Vo.DisplayVo.Item>> GetItems(String searchStr)
         {
-            DatabaseInitialization();
-            List<Item> itemCache = await sqliteDatabase.Select<Item>(
-                new List<string>() {
-                    "Name",
-                    "Name_de",
-                    "Name_en",
-                    "Name_fr",
-                    "Name_ja",
-                    "Name_chs"
-                },
-                new List<string>() {
-                "LIKE",
-                "LIKE",
-                "LIKE",
-                "LIKE",
-                "LIKE",
-                "LIKE",
-                },
-                new Item()
-                {
-                    Name = searchStr,
-                    Name_de = searchStr,
-                    Name_en = searchStr,
-                    Name_fr = searchStr,
-                    Name_ja = searchStr,
-                    Name_chs = searchStr
-                },
-                new List<string>() {
-                "OR",
-                "OR",
-                "OR",
-                "OR",
-                "OR"
-                },
-                10
-            );
-            return ConvertTo<Data.Model.Vo.DisplayVo.Item, Item>(itemCache);
+            await LoadSource(false);
+            List<int?> fishList = (from spearfishingItem in spearfishingItemCache select spearfishingItem.ItemTargetID).ToList<int?>();
+            List<int?> gatheringList = (from gatheringItem in gatheringItemCache select gatheringItem.ItemTargetID).ToList<int?>();
+            List<int?> allList = fishList.Union<int?>(gatheringList).ToList<int?>();
+            List<Item> items = (from item in itemCache
+                                join itemTargetID in allList on item.ID equals itemTargetID
+                                where item.Name.Contains(searchStr)
+                                || item.Name_de.Contains(searchStr)
+                                || item.Name_en.Contains(searchStr)
+                                || item.Name_fr.Contains(searchStr)
+                                || item.Name_ja.Contains(searchStr)
+                                || item.Name_chs.Contains(searchStr)
+                                select item).Take(10).ToList<Item>();
+            return ConvertTo<Data.Model.Vo.DisplayVo.Item, Item>(items);
         }
 
-        public static async Task<List<Data.Model.Vo.DisplayVo.Item>> GetItemDetail(int itemId)
+        public static async Task<Data.Model.Vo.DisplayVo.Item> GetItemDetail(int itemId)
         {
-            await LoadSource();
+            await LoadSource(false);
             List<Item> items = (from item in itemCache where item.ID == itemId select item).ToList<Item>();
             if (items.Count > 0)
             {
                 Data.Model.Vo.DisplayVo.Item item = ConvertTo<Data.Model.Vo.DisplayVo.Item, Item>(items.First());
 
                 List<GatheringItem> gatheringItems = (from gatheringItem in gatheringItemCache where gatheringItem.ItemTargetID == itemId select gatheringItem).ToList<GatheringItem>();
-                if (gatheringItems.Count > 0)
+                List<SpearfishingItem> spearfishingItems = (from spearfishingItem in spearfishingItemCache where spearfishingItem.ItemTargetID == itemId select spearfishingItem).ToList<SpearfishingItem>();
+                if (gatheringItems.Count > 0 || spearfishingItems.Count > 0)
                 {
-                    item.GatheringItem = ConvertTo<Data.Model.Vo.DisplayVo.GatheringItem, GatheringItem>(gatheringItems)[0];
+                    int? targetID = 0;
+                    string target = "";
+
+                    if (gatheringItems.Count > 0)
+                    {
+                        item.GatheringItem = ConvertTo<Data.Model.Vo.DisplayVo.GatheringItem, GatheringItem>(gatheringItems)[0];
+                        target = "GatheringItem";
+                        targetID = item.GatheringItem.ID;
+                    }
+
+                    if (spearfishingItems.Count > 0)
+                    {
+                        item.SpearfishingItem = ConvertTo<Data.Model.Vo.DisplayVo.SpearfishingItem, SpearfishingItem>(spearfishingItems)[0];
+                        target = "SpearfishingItem";
+                        targetID = item.SpearfishingItem.ID;
+                    }
 
                     List<GatheringPointBase> entities =
                         (from gatheringPointBase in gatheringPointBaseCache
-                         where gatheringPointBase.Item0TargetID == item.GatheringItem.ID
-                     || gatheringPointBase.Item1TargetID == item.GatheringItem.ID
-                     || gatheringPointBase.Item2TargetID == item.GatheringItem.ID
-                     || gatheringPointBase.Item3TargetID == item.GatheringItem.ID
-                     || gatheringPointBase.Item4TargetID == item.GatheringItem.ID
-                     || gatheringPointBase.Item5TargetID == item.GatheringItem.ID
-                     || gatheringPointBase.Item6TargetID == item.GatheringItem.ID
-                     || gatheringPointBase.Item7TargetID == item.GatheringItem.ID
+                         where ((gatheringPointBase.Item0Target == target && gatheringPointBase.Item0TargetID == targetID)
+                     || (gatheringPointBase.Item1Target == target && gatheringPointBase.Item1TargetID == targetID)
+                     || (gatheringPointBase.Item2Target == target && gatheringPointBase.Item2TargetID == targetID)
+                     || (gatheringPointBase.Item3Target == target && gatheringPointBase.Item3TargetID == targetID)
+                     || (gatheringPointBase.Item4Target == target && gatheringPointBase.Item4TargetID == targetID)
+                     || (gatheringPointBase.Item5Target == target && gatheringPointBase.Item5TargetID == targetID)
+                     || (gatheringPointBase.Item6Target == target && gatheringPointBase.Item6TargetID == targetID)
+                     || (gatheringPointBase.Item7Target == target && gatheringPointBase.Item7TargetID == targetID))
                          select gatheringPointBase).ToList<GatheringPointBase>();
 
                     if (entities.Count > 0)
                     {
-                        item.GatheringItem.GatheringPointBases = ConvertTo<Data.Model.Vo.DisplayVo.GatheringPointBase, GatheringPointBase>(entities);
-                        foreach (Data.Model.Vo.DisplayVo.GatheringPointBase gatheringPointBase in item.GatheringItem.GatheringPointBases)
+                        List<Data.Model.Vo.DisplayVo.GatheringPointBase> gatheringPointBases = ConvertTo<Data.Model.Vo.DisplayVo.GatheringPointBase, GatheringPointBase>(entities);
+
+                        if (gatheringItems.Count > 0)
+                        {
+                            item.GatheringItem.GatheringPointBases = gatheringPointBases;
+                        }
+
+                        if (spearfishingItems.Count > 0)
+                        {
+                            item.SpearfishingItem.GatheringPointBases = gatheringPointBases;
+                        }
+
+                        foreach (Data.Model.Vo.DisplayVo.GatheringPointBase gatheringPointBase in gatheringPointBases)
                         {
                             List<GatheringPointBaseExtension> exEntities =
                                (from gatheringPointBaseExtension in gatheringPointBaseExtensionCache
@@ -236,6 +260,7 @@ namespace GatheringTimer
                     }
                 }
                 Logger.Info(JsonConvert.SerializeObject(item));
+                return item;
 
             }
             return null;

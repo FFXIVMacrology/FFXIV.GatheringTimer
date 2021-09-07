@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GatheringTimer.Data.Model.Vo.DisplayVo
+namespace GatheringTimer.Data.Model.Entity
 {
-
     public class Item
     {
         public int?  ID { get; set; }
@@ -17,10 +16,11 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public String Name_ja { get; set; }
         public String Name_chs { get; set; }
 
-        public GatheringItem GatheringItem { get; set; }
-
     }
 
+    /// <summary>
+    /// XIV GatheringItem Data
+    /// </summary>
     public class GatheringItem
     {
         public int?  ID { get; set; }
@@ -30,10 +30,44 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public String GatheringItemLevelTarget { get; set; }
         public int? GatheringItemLevelTargetID { get; set; }
 
-        public List<GatheringPointBase> GatheringPointBases { get; set; }
-
     }
 
+    public class SpearfishingItem
+    {
+        public string Description { get; set; }
+
+        public string Description_de { get; set; }
+
+        public string Description_en { get; set; }
+
+        public string Description_fr { get; set; }
+
+        public string Description_ja { get; set; }
+
+        public string FishingRecordTypeTarget { get; set; }
+
+        public int? FishingRecordTypeTargetID { get; set; }
+
+        public string GatheringItemLevelTarget { get; set; }
+
+        public int? GatheringItemLevelTargetID { get; set; }
+
+        public int? ID { get; set; }
+
+        public int? IsVisible { get; set; }
+
+        public string ItemTarget { get; set; }
+
+        public int? ItemTargetID { get; set; }
+
+        public string TerritoryTypeTarget { get; set; }
+
+        public int? TerritoryTypeTargetID { get; set; }
+    }
+
+    /// <summary>
+    /// XIV GatheringPointBase Data
+    /// </summary>
     public class GatheringPointBase
     {
         public int? GatheringLevel { get; set; }
@@ -57,14 +91,11 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public int? Item6TargetID { get; set; }
         public String Item7Target { get; set; }
         public int? Item7TargetID { get; set; }
-
-        public GatheringPointBaseExtension GatheringPointBaseExtension{ get; set; }
-
-        public List<TimeConditionExtension> TimeConditionExtension { get; set; }
-
-        public List<GatheringPoint> GatheringPoint { get; set; }
     }
 
+    /// <summary>
+    /// XIV GatheringPoint Data
+    /// </summary>
     public class GatheringPoint
     {
         public int? Count { get; set; }
@@ -98,10 +129,6 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public int? TerritoryTypeTargetID { get; set; }
 
         public int? Type { get; set; }
-
-        public PlaceName PlaceName { get; set; }
-
-        public TerritoryType TerritoryType { get; set; }
     }
 
     public class PlaceName
@@ -143,10 +170,11 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public string PlaceNameZoneTarget { get; set; }
 
         public int?  PlaceNameZoneTargetID { get; set; }
-
-        public Map Map { get; set; }
     }
 
+    /// <summary>
+    /// XIV Map Data
+    /// </summary>
     public class Map
     {
 
@@ -190,6 +218,29 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public int?  GatheringPointBaseId { get; set; }
         public int?  Hour { get; set; }
         public int?  During { get; set; }
+    }
+
+    public class FavouriteItem {
+
+        public String Id { get; set; }
+
+        public String itemId { get; set; }
+    }
+
+    public class FavouritePoint
+    {
+
+        public String Id { get; set; }
+
+        public String PointBaseId { get; set; }
+    }
+
+    public class TimerEnable {
+
+        public String Id { get; set; }
+
+        public String PointBaseId{ get; set; }
+
     }
 
 }

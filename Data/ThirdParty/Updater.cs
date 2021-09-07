@@ -60,6 +60,7 @@ namespace GatheringTimer.Data.Update
                 Queue<Task> tasks = new Queue<Task>();
                 tasks.Enqueue(CreateTable<Item>());
                 tasks.Enqueue(CreateTable<GatheringItem>());
+                tasks.Enqueue(CreateTable<SpearfishingItem>());
                 tasks.Enqueue(CreateTable<GatheringPointBase>());
                 tasks.Enqueue(CreateTable<GatheringPoint>());
                 tasks.Enqueue(CreateTable<Map>());
@@ -165,6 +166,7 @@ namespace GatheringTimer.Data.Update
             SQLiteDatabase XIVApiCache = XIVApiUpdater.GetSQLiteDatabase();
             await Sync<Item, Model.Vo.XIVApiVo.Item>(XIVApiCache);
             await Sync<GatheringItem, Model.Vo.XIVApiVo.GatheringItem>(XIVApiCache);
+            await Sync<SpearfishingItem, Model.Vo.XIVApiVo.SpearfishingItem>(XIVApiCache);
             await Sync<GatheringPointBase, Model.Vo.XIVApiVo.GatheringPointBase>(XIVApiCache);
             await Sync<GatheringPoint, Model.Vo.XIVApiVo.GatheringPoint>(XIVApiCache);
             await Sync<PlaceName, Model.Vo.XIVApiVo.PlaceName>(XIVApiCache);

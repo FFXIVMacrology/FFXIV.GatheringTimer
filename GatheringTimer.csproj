@@ -70,24 +70,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constant\Language.cs" />
-    <Compile Include="Data\Model\Vo\DisplayVo.cs" />
+    <Compile Include="Data\Model\DisplayVo.cs" />
     <Compile Include="Service\Service.cs" />
-    <Compile Include="Data\Update\ApiUpdater\CafeMakerUpdater.cs" />
-    <Compile Include="Data\Update\ApiUpdater\HuiJiWikiUpdater.cs" />
-    <Compile Include="Data\Update\ApiUpdater\XIVApiUpdater.cs" />
-    <Compile Include="Data\Update\Updater.cs" />
-    <Compile Include="Data\Update\Config\CafeMakerConfig.cs" />
-    <Compile Include="Data\Update\Config\HuiJiWikiConfig.cs" />
-    <Compile Include="Data\Update\Config\XIVApiConfig.cs" />
+    <Compile Include="Data\ThirdParty\CafeMaker\CafeMakerUpdater.cs" />
+    <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiUpdater.cs" />
+    <Compile Include="Data\ThirdParty\XIVApi\XIVApiUpdater.cs" />
+    <Compile Include="Data\ThirdParty\Updater.cs" />
+    <Compile Include="Data\ThirdParty\CafeMaker\CafeMakerConfig.cs" />
+    <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiConfig.cs" />
+    <Compile Include="Data\ThirdParty\XIVApi\XIVApiConfig.cs" />
     <Compile Include="GatheringTimer.cs" />
     <Compile Include="Data\Database\DataToModel.cs" />
     <Compile Include="Data\Database\SQLiteDatabase.cs" />
     <Compile Include="Data\DataConfig.cs" />
     <Compile Include="Data\DataManagement.cs" />
-    <Compile Include="Data\Model\Entity\DBEntity.cs" />
-    <Compile Include="Data\Model\Vo\HuiJiWikiVo.cs" />
-    <Compile Include="Data\Model\Vo\CafeMakerVo.cs" />
-    <Compile Include="Data\Model\Vo\XIVApiVo.cs" />
+    <Compile Include="Data\Model\Entity.cs" />
+    <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiVo.cs" />
+    <Compile Include="Data\ThirdParty\CafeMaker\CafeMakerVo.cs" />
+    <Compile Include="Data\ThirdParty\XIVApi\XIVApiVo.cs" />
     <Compile Include="Util\EorzeaDateTimeExtension.cs" />
     <Compile Include="Util\RestClient.cs" />
     <Compile Include="Util\RequestUtil.cs" />

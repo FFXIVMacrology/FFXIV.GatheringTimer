@@ -124,6 +124,7 @@ namespace GatheringTimer.Data.Update.ApiSync
                 String dataSource = config["Path"] + config["Filename"];
                 String urlItem = config["Item"];
                 String urlGatheringItem = config["GatheringItem"];
+                String urlSpearfishingItem = config["SpearfishingItem"];
                 String urlGatheringPointBase = config["GatheringPointBase"];
                 String urlGatheringPoint = config["GatheringPoint"];
                 String urlMap = config["Map"];
@@ -137,6 +138,7 @@ namespace GatheringTimer.Data.Update.ApiSync
                 Queue<Task> tasks = new Queue<Task>();
                 tasks.Enqueue(GetRawData<Item>(urlItem));
                 tasks.Enqueue(GetRawData<GatheringItem>(urlGatheringItem));
+                tasks.Enqueue(GetRawData<SpearfishingItem>(urlSpearfishingItem));
                 tasks.Enqueue(GetRawData<GatheringPointBase>(urlGatheringPointBase));
                 tasks.Enqueue(GetRawData<GatheringPoint>(urlGatheringPoint));
                 tasks.Enqueue(GetRawData<Map>(urlMap));

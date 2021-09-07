@@ -27,14 +27,14 @@ namespace GatheringTimer.Data.Model.Vo.XIVApiVo
     /// </summary>
     public class Item
     {
-        public int?  ID { get; set; }
+        public int? ID { get; set; }
         public String Name { get; set; }
         public String Name_de { get; set; }
         public String Name_en { get; set; }
         public String Name_fr { get; set; }
         public String Name_ja { get; set; }
         public int? IsCollectable { get; set; }
-        
+
     }
 
     /// <summary>
@@ -42,13 +42,46 @@ namespace GatheringTimer.Data.Model.Vo.XIVApiVo
     /// </summary>
     public class GatheringItem
     {
-        public int?  ID { get; set; }
+        public int? ID { get; set; }
         public int? IsHidden { get; set; }
         public String ItemTarget { get; set; }
         public int? ItemTargetID { get; set; }
         public String GatheringItemLevelTarget { get; set; }
         public int? GatheringItemLevelTargetID { get; set; }
 
+    }
+
+    public class SpearfishingItem
+    {
+        public string Description { get; set; }
+
+        public string Description_de { get; set; }
+
+        public string Description_en { get; set; }
+
+        public string Description_fr { get; set; }
+
+        public string Description_ja { get; set; }
+
+        public string FishingRecordTypeTarget { get; set; }
+
+        public int? FishingRecordTypeTargetID { get; set; }
+
+        public string GatheringItemLevelTarget { get; set; }
+
+        public int? GatheringItemLevelTargetID { get; set; }
+
+        public int? ID { get; set; }
+
+        public int? IsVisible { get; set; }
+
+        public string ItemTarget { get; set; }
+
+        public int? ItemTargetID { get; set; }
+
+        public string TerritoryTypeTarget { get; set; }
+
+        public int? TerritoryTypeTargetID { get; set; }
     }
 
     /// <summary>
@@ -59,7 +92,7 @@ namespace GatheringTimer.Data.Model.Vo.XIVApiVo
         public int? GatheringLevel { get; set; }
         public String GatheringTypeTarget { get; set; }
         public int? GatheringTypeTargetID { get; set; }
-        public int?  ID { get; set; }
+        public int? ID { get; set; }
         public int? IsLimited { get; set; }
         public String Item0Target { get; set; }
         public int? Item0TargetID { get; set; }
@@ -103,7 +136,7 @@ namespace GatheringTimer.Data.Model.Vo.XIVApiVo
 
         public int? GatheringSubCategoryTargetID { get; set; }
 
-        public int?  ID { get; set; }
+        public int? ID { get; set; }
 
         public int? Patch { get; set; }
 
@@ -120,7 +153,7 @@ namespace GatheringTimer.Data.Model.Vo.XIVApiVo
 
     public class PlaceName
     {
-        public int?  ID { get; set; }
+        public int? ID { get; set; }
 
         public string Name { get; set; }
 
@@ -138,25 +171,25 @@ namespace GatheringTimer.Data.Model.Vo.XIVApiVo
 
         public string AetheryteTarget { get; set; }
 
-        public int?  AetheryteTargetID { get; set; }
+        public int? AetheryteTargetID { get; set; }
 
-        public int?  ID { get; set; }
+        public int? ID { get; set; }
 
         public string MapTarget { get; set; }
 
-        public int?  MapTargetID { get; set; }
+        public int? MapTargetID { get; set; }
 
         public string PlaceNameRegionTarget { get; set; }
 
-        public int?  PlaceNameRegionTargetID { get; set; }
+        public int? PlaceNameRegionTargetID { get; set; }
 
         public string PlaceNameTarget { get; set; }
 
-        public int?  PlaceNameTargetID { get; set; }
+        public int? PlaceNameTargetID { get; set; }
 
         public string PlaceNameZoneTarget { get; set; }
 
-        public int?  PlaceNameZoneTargetID { get; set; }
+        public int? PlaceNameZoneTargetID { get; set; }
     }
 
 
@@ -168,7 +201,7 @@ namespace GatheringTimer.Data.Model.Vo.XIVApiVo
     public class Map
     {
 
-        public int?  ID { get; set; }
+        public int? ID { get; set; }
 
         public int? OffsetX { get; set; }
 

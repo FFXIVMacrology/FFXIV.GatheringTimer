@@ -28,6 +28,7 @@ namespace GatheringTimer.Data.Update.Config
         {
             dic.Add("Item", GetXIVApiEntityUrl<Item>(XIV_API_URL, 3000));
             dic.Add("GatheringItem", GetXIVApiEntityUrl<GatheringItem>(XIV_API_URL, 3000));
+            dic.Add("SpearfishingItem", GetXIVApiEntityUrl<SpearfishingItem>(XIV_API_URL, 3000));
             dic.Add("GatheringPointBase", GetXIVApiEntityUrl<GatheringPointBase>(XIV_API_URL, 3000));
             dic.Add("GatheringPoint", GetXIVApiEntityUrl<GatheringPoint>(XIV_API_URL, 3000));
             dic.Add("Map", GetXIVApiEntityUrl<Map>(XIV_API_URL, 3000));

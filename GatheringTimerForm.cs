@@ -15,7 +15,6 @@ using GatheringTimer.Data;
 [assembly: AssemblyDescription("GatheringTimer")]
 [assembly: AssemblyCompany("ErinnerMO")]
 [assembly: AssemblyVersion("0.0.0.1")]
-
 namespace GatheringTimer
 {
     public class GatheringTimerForm : UserControl, IActPluginV1
@@ -52,12 +51,20 @@ namespace GatheringTimer
             this.textBoxLogger = new System.Windows.Forms.TextBox();
             this.syncData = new System.Windows.Forms.Button();
             this.itemList = new System.Windows.Forms.ListBox();
+            this.tabControlGlobal = new System.Windows.Forms.TabControl();
+            this.pointTab = new System.Windows.Forms.TabPage();
+            this.detailList = new System.Windows.Forms.ListBox();
+            this.timerTab = new System.Windows.Forms.TabPage();
+            this.configTab = new System.Windows.Forms.TabPage();
+            this.tabControlGlobal.SuspendLayout();
+            this.pointTab.SuspendLayout();
+            this.configTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // searchLabel
             // 
             this.searchLabel.AutoSize = true;
-            this.searchLabel.Location = new System.Drawing.Point(3, 0);
+            this.searchLabel.Location = new System.Drawing.Point(25, 14);
             this.searchLabel.Name = "searchLabel";
             this.searchLabel.Size = new System.Drawing.Size(53, 12);
             this.searchLabel.TabIndex = 0;
@@ -65,24 +72,24 @@ namespace GatheringTimer
             // 
             // searchBox
             // 
-            this.searchBox.Location = new System.Drawing.Point(6, 15);
+            this.searchBox.Location = new System.Drawing.Point(27, 29);
             this.searchBox.Name = "searchBox";
-            this.searchBox.Size = new System.Drawing.Size(431, 21);
+            this.searchBox.Size = new System.Drawing.Size(138, 21);
             this.searchBox.TabIndex = 1;
             this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
             // 
             // textBoxLogger
             // 
-            this.textBoxLogger.Location = new System.Drawing.Point(20, 239);
+            this.textBoxLogger.Location = new System.Drawing.Point(31, 92);
             this.textBoxLogger.Multiline = true;
             this.textBoxLogger.Name = "textBoxLogger";
             this.textBoxLogger.ReadOnly = true;
-            this.textBoxLogger.Size = new System.Drawing.Size(647, 80);
+            this.textBoxLogger.Size = new System.Drawing.Size(516, 91);
             this.textBoxLogger.TabIndex = 2;
             // 
             // syncData
             // 
-            this.syncData.Location = new System.Drawing.Point(600, 45);
+            this.syncData.Location = new System.Drawing.Point(464, 47);
             this.syncData.Name = "syncData";
             this.syncData.Size = new System.Drawing.Size(67, 20);
             this.syncData.TabIndex = 6;
@@ -94,27 +101,84 @@ namespace GatheringTimer
             // 
             this.itemList.FormattingEnabled = true;
             this.itemList.ItemHeight = 12;
-            this.itemList.Location = new System.Drawing.Point(6, 42);
+            this.itemList.Location = new System.Drawing.Point(27, 56);
             this.itemList.Name = "itemList";
-            this.itemList.Size = new System.Drawing.Size(431, 172);
+            this.itemList.Size = new System.Drawing.Size(138, 124);
             this.itemList.TabIndex = 7;
             this.itemList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ItemList_MouseDoubleClick);
             this.itemList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ItemList_MouseDoubleClick);
+            // 
+            // tabControlGlobal
+            // 
+            this.tabControlGlobal.Controls.Add(this.pointTab);
+            this.tabControlGlobal.Controls.Add(this.timerTab);
+            this.tabControlGlobal.Controls.Add(this.configTab);
+            this.tabControlGlobal.Location = new System.Drawing.Point(3, 0);
+            this.tabControlGlobal.Name = "tabControlGlobal";
+            this.tabControlGlobal.SelectedIndex = 0;
+            this.tabControlGlobal.Size = new System.Drawing.Size(677, 353);
+            this.tabControlGlobal.TabIndex = 8;
+            // 
+            // pointTab
+            // 
+            this.pointTab.Controls.Add(this.detailList);
+            this.pointTab.Controls.Add(this.searchBox);
+            this.pointTab.Controls.Add(this.itemList);
+            this.pointTab.Controls.Add(this.searchLabel);
+            this.pointTab.Location = new System.Drawing.Point(4, 22);
+            this.pointTab.Name = "pointTab";
+            this.pointTab.Padding = new System.Windows.Forms.Padding(3);
+            this.pointTab.Size = new System.Drawing.Size(669, 327);
+            this.pointTab.TabIndex = 0;
+            this.pointTab.Text = "采集点";
+            this.pointTab.UseVisualStyleBackColor = true;
+            this.pointTab.Click += new System.EventHandler(this.pointTab_Click);
+            // 
+            // detailList
+            // 
+            this.detailList.FormattingEnabled = true;
+            this.detailList.ItemHeight = 12;
+            this.detailList.Location = new System.Drawing.Point(197, 56);
+            this.detailList.Name = "detailList";
+            this.detailList.Size = new System.Drawing.Size(146, 124);
+            this.detailList.TabIndex = 8;
+            // 
+            // timerTab
+            // 
+            this.timerTab.Location = new System.Drawing.Point(4, 22);
+            this.timerTab.Name = "timerTab";
+            this.timerTab.Padding = new System.Windows.Forms.Padding(3);
+            this.timerTab.Size = new System.Drawing.Size(669, 327);
+            this.timerTab.TabIndex = 1;
+            this.timerTab.Text = "定时器";
+            this.timerTab.UseVisualStyleBackColor = true;
+            // 
+            // configTab
+            // 
+            this.configTab.Controls.Add(this.textBoxLogger);
+            this.configTab.Controls.Add(this.syncData);
+            this.configTab.Location = new System.Drawing.Point(4, 22);
+            this.configTab.Name = "configTab";
+            this.configTab.Padding = new System.Windows.Forms.Padding(3);
+            this.configTab.Size = new System.Drawing.Size(669, 327);
+            this.configTab.TabIndex = 1;
+            this.configTab.Text = "设置";
+            this.configTab.UseVisualStyleBackColor = true;
             // 
             // GatheringTimerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.itemList);
-            this.Controls.Add(this.syncData);
-            this.Controls.Add(this.textBoxLogger);
-            this.Controls.Add(this.searchBox);
-            this.Controls.Add(this.searchLabel);
+            this.Controls.Add(this.tabControlGlobal);
             this.Name = "GatheringTimerForm";
-            this.Size = new System.Drawing.Size(686, 354);
+            this.Size = new System.Drawing.Size(680, 353);
             this.Load += new System.EventHandler(this.GatheringTimerForm_Load);
+            this.tabControlGlobal.ResumeLayout(false);
+            this.pointTab.ResumeLayout(false);
+            this.pointTab.PerformLayout();
+            this.configTab.ResumeLayout(false);
+            this.configTab.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -124,6 +188,11 @@ namespace GatheringTimer
         private TextBox textBoxLogger;
         private Button syncData;
         private ListBox itemList;
+        private TabControl tabControlGlobal;
+        private TabPage pointTab;
+        private TabPage timerTab;
+        private TabPage configTab;
+        private ListBox detailList;
         private System.Windows.Forms.Label searchLabel;
 
         #endregion
@@ -255,7 +324,7 @@ namespace GatheringTimer
             }
             else
             {
-                await GatheringTimer.GetItem(this, searchBox.Text);
+                await GatheringTimer.GetItems(this, searchBox.Text);
             }
 
         }
@@ -274,15 +343,34 @@ namespace GatheringTimer
             }
         }
 
-        private void ItemList_MouseDoubleClick(object sender, MouseEventArgs e)
+        private async void ItemList_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             int index = this.itemList.IndexFromPoint(e.Location);
             if (index != System.Windows.Forms.ListBox.NoMatches)
             {
-                MessageBox.Show(this.itemList.Items[index].GetType().GetProperty("ID").GetValue(this.itemList.Items[index]).ToString());
+                int itemID = int.Parse(this.itemList.Items[index].GetType().GetProperty("ID").GetValue(this.itemList.Items[index]).ToString());
+                await GatheringTimer.GetItemDetail(this,itemID);
             }
         }
 
+        public void DetailList_SetContent<T>(T detail)
+        {
+            this.detailList.Items.Clear();
+            if (null != detailList)
+            {
+                //foreach (T detail in detail.GetType().GetProperty(""))
+                //{
+                //    this.itemList.Items.Add(detail);
+                //}
+                //this.itemList.ValueMember = "ID";
+                //this.itemList.DisplayMember = "Name_chs";
+            }
+        }
+
+        private void pointTab_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
