@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GatheringTimer.Data.Model.Vo.DisplayVo
+namespace GatheringTimer.Data.Model.DisplayVo
 {
 
     public class Item
@@ -47,6 +47,8 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
 
         public string Description_ja { get; set; }
 
+        public string Description_chs { get; set; }
+
         public string FishingRecordTypeTarget { get; set; }
 
         public int? FishingRecordTypeTargetID { get; set; }
@@ -73,6 +75,7 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
 
     public class GatheringPointBase
     {
+        public string displayStr { get; set; }
         public int? GatheringLevel { get; set; }
         public string GatheringTypeTarget { get; set; }
         public int? GatheringTypeTargetID { get; set; }
@@ -154,6 +157,8 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public string Name_fr { get; set; }
 
         public string Name_ja { get; set; }
+
+        public string Name_chs { get; set; }
     }
 
     public class TerritoryType
@@ -182,6 +187,12 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public int?  PlaceNameZoneTargetID { get; set; }
 
         public Map Map { get; set; }
+
+        public PlaceName PlaceNameRegion { get; set; }
+
+        public PlaceName PlaceName { get; set; }
+
+        public PlaceName PlaceNameZone { get; set; }
     }
 
     public class Map
@@ -202,6 +213,10 @@ namespace GatheringTimer.Data.Model.Vo.DisplayVo
         public int? PlaceNameTargetID { get; set; }
 
         public int? SizeFactor { get; set; }
+
+        public PlaceName PlaceNameRegion { get; set; }
+
+        public PlaceName PlaceName { get; set; }
 
     }
 

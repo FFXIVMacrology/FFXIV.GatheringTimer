@@ -105,7 +105,6 @@ namespace GatheringTimer
             this.itemList.Name = "itemList";
             this.itemList.Size = new System.Drawing.Size(138, 124);
             this.itemList.TabIndex = 7;
-            this.itemList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ItemList_MouseDoubleClick);
             this.itemList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ItemList_MouseDoubleClick);
             // 
             // tabControlGlobal
@@ -132,7 +131,6 @@ namespace GatheringTimer
             this.pointTab.TabIndex = 0;
             this.pointTab.Text = "采集点";
             this.pointTab.UseVisualStyleBackColor = true;
-            this.pointTab.Click += new System.EventHandler(this.pointTab_Click);
             // 
             // detailList
             // 
@@ -140,7 +138,7 @@ namespace GatheringTimer
             this.detailList.ItemHeight = 12;
             this.detailList.Location = new System.Drawing.Point(197, 56);
             this.detailList.Name = "detailList";
-            this.detailList.Size = new System.Drawing.Size(146, 124);
+            this.detailList.Size = new System.Drawing.Size(305, 124);
             this.detailList.TabIndex = 8;
             // 
             // timerTab
@@ -349,28 +347,64 @@ namespace GatheringTimer
             if (index != System.Windows.Forms.ListBox.NoMatches)
             {
                 int itemID = int.Parse(this.itemList.Items[index].GetType().GetProperty("ID").GetValue(this.itemList.Items[index]).ToString());
-                await GatheringTimer.GetItemDetail(this,itemID);
+                await GatheringTimer.GetItemDetail(this, itemID);
             }
         }
 
-        public void DetailList_SetContent<T>(T detail)
+        public void DetailList_SetContent(Data.Model.DisplayVo.Item item)
         {
             this.detailList.Items.Clear();
             if (null != detailList)
             {
-                //foreach (T detail in detail.GetType().GetProperty(""))
-                //{
-                //    this.itemList.Items.Add(detail);
-                //}
-                //this.itemList.ValueMember = "ID";
-                //this.itemList.DisplayMember = "Name_chs";
+                List<Data.Model.DisplayVo.GatheringPointBase> gatheringPointBases = default;
+
+                if (null != item.GatheringItem)
+                {
+                    gatheringPointBases = item.GatheringItem.GatheringPointBases;
+
+                }
+
+                if (null != item.SpearfishingItem)
+                {
+                    gatheringPointBases = item.SpearfishingItem.GatheringPointBases;
+
+                }
+
+                if (null != gatheringPointBases)
+                {
+
+                    foreach (Data.Model.DisplayVo.GatheringPointBase gatheringPointBase in gatheringPointBases)
+                    {
+                        if (gatheringPointBase.GatheringPointBaseExtension!=null&& gatheringPointBase.GatheringPoint != null) {
+                            //string trr = default;
+                            //string area = default;
+                            //string location = "(X:"+ gatheringPointBase.GatheringPointBaseExtension.LocationX+",Y:"+ gatheringPointBase.GatheringPointBaseExtension.LocationY+")";
+                            
+                            //foreach (Data.Model.DisplayVo.GatheringPoint gatheringPoint in gatheringPointBase.GatheringPoint)
+                            //{
+                            //    if (gatheringPoint.TerritoryType.PlaceName != null)
+                            //    {
+                            //        trr = gatheringPoint.TerritoryType.PlaceName.Name_chs;
+                            //    }
+
+                            //    if (gatheringPoint.PlaceName != null)
+                            //    {
+                            //        area = gatheringPoint.PlaceName.Name_chs;
+                            //    }
+                            //    if (trr != null && area != null) break;
+                            //}
+                            //gatheringPointBase.displayStr = trr+location+area;
+                            this.detailList.Items.Add(gatheringPointBase);
+                            this.detailList.ValueMember = "ID";
+                            this.detailList.DisplayMember = "displayStr";
+
+                        }
+
+                    }
+
+
+                }
             }
         }
-
-        private void pointTab_Click(object sender, EventArgs e)
-        {
-
-        }
     }
-
 }

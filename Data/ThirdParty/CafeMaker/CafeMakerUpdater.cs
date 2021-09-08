@@ -4,21 +4,55 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using GatheringTimer.Data.Database;
-using GatheringTimer.Data.Model.Vo.CafeMakerVo;
-using GatheringTimer.Data.Update.Config;
 using GatheringTimer.Util;
 
-namespace GatheringTimer.Data.Update.ApiSync
+namespace GatheringTimer.Data.ThirdParty.CafeMaker
 {
     public static class CafeMakerUpdater
     {
-        private static readonly Dictionary<String, String> config = CafeMakerConfig.ConfigInitialization();
+        private static readonly string CAFE_MAKER_URL = "https://cafemaker.wakingsands.com";
 
-        private static readonly SQLiteDatabase cacheDatabase = new SQLiteDatabase();
+        public static List<Item> ItemCache { get; set; } = default;
+        public static List<SpearfishingItem> SpearfishingItemCache { get; set; } = default;
+        public static List<PlaceName> PlaceNameCache { get; set; } = default;
 
-        public static SQLiteDatabase GetSQLiteDatabase()
+        private static string GetCafeMakerEntityUrl<T>(string serverUrl, int? limit)
         {
-            return cacheDatabase;
+
+            Type type = typeof(T);
+            string url = serverUrl + "/" + type.Name;
+            if (null != limit)
+            {
+                url += "?limit=" + limit;
+            }
+            if (url.Contains("?") || url.Contains("&"))
+            {
+                if (url.EndsWith("?") || url.EndsWith("&"))
+                {
+                    url += "columns=";
+                }
+                else
+                {
+                    url += "&columns=";
+                }
+            }
+            else
+            {
+                url += "?columns=";
+            }
+
+            var modelPropertyInfos = type.GetProperties();
+            foreach (var propertyInfo in modelPropertyInfos)
+            {
+                var name = propertyInfo.Name;
+                url += name;
+                url += ",";
+            }
+            if (modelPropertyInfos.Length > 0)
+            {
+                url = url.Substring(0, url.Length - 1);
+            }
+            return url;
         }
 
         /// <summary>
@@ -61,55 +95,22 @@ namespace GatheringTimer.Data.Update.ApiSync
         private static async Task<List<T>> GetDataList<T>(String url, String param, String key)
         {
             List<String> jsonList = await RequestCafeMakerAsync(url, param);
-            Logger.Info("Get [" + typeof(T).Name + "] Data Success!");
             return await RequestUtil.ParseResultList<T>(jsonList, key);
         }
 
-        /// <summary>
-        /// Reinitialize DataBase
-        /// </summary>
-        private static bool CacheInitialization()
+        private static void IntoCache<T>(List<T> tlist)
         {
-            Logger.Info("CafeMakerCache File Reinitializing");
-            String path = config["Path"];
-            String filename = config["Filename"];
-            if (String.IsNullOrEmpty(path) || String.IsNullOrEmpty(filename))
-            {
-                Logger.Error("Config Invaild", new Exception("path or filename is null or Empty"));
-                return false;
-            }
-            else
-            {
-                String dataSource = path + filename;
-                cacheDatabase.SetDataSource(dataSource);
-                cacheDatabase.DeleteDatabase();
-                cacheDatabase.CreateDatabase();
-                Logger.Info("CafeMakerCache File Already");
-                return true;
-            }
-
+            typeof(CafeMakerUpdater).GetProperty(typeof(T).Name + "Cache").SetValue(typeof(CafeMakerUpdater), tlist);
         }
 
         private static async Task<bool> GetRawData<T>(String url)
         {
-
-            Logger.Info("Get CafeMaker " + typeof(T).Name + " Data Start");
             Stopwatch watch = new Stopwatch();
             watch.Start();
             List<T> dataList = await GetDataList<T>(url, "", "Results");
+            IntoCache<T>(dataList);
             Logger.Info("Get CafeMaker " + typeof(T).Name + " Data in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
-            watch.Reset();
-            watch.Start();
-            Logger.Info("Init CafeMaker Cache " + typeof(T).Name + " Start");
-            bool delete = await cacheDatabase.DeleteTable<T>();
-            bool create = await cacheDatabase.CreateTable<T>();
-            Logger.Info("Inited CafeMaker Cache " + typeof(T).Name + " in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
-            watch.Reset();
-            watch.Start();
-            Logger.Info("Save CafeMaker Cache " + typeof(T).Name + " Start");
-            bool itemsInsert = await cacheDatabase.InsertRowByRow<T>(dataList);
-            Logger.Info("Saved CafeMaker Cache " + typeof(T).Name + " in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
-            return itemsInsert;
+            return true;
 
         }
 
@@ -117,20 +118,12 @@ namespace GatheringTimer.Data.Update.ApiSync
         {
             try
             {
-                CacheInitialization();
-
-                Logger.Info("Loading Config");
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
-                String dataSource = config["Path"] + config["Filename"];
-                String urlItem = config["Item"];
-                Logger.Info("Loaded Config in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
-
-                Logger.Info("CafeMakerDataUpdate Start");
-                watch.Reset();
-                watch.Start();
                 Queue<Task> tasks = new Queue<Task>();
-                tasks.Enqueue(GetRawData<Item>(urlItem));
+                tasks.Enqueue(GetRawData<Item>(GetCafeMakerEntityUrl<Item>(CAFE_MAKER_URL,3000)));
+                tasks.Enqueue(GetRawData<SpearfishingItem>(GetCafeMakerEntityUrl<SpearfishingItem>(CAFE_MAKER_URL, 3000)));
+                tasks.Enqueue(GetRawData<PlaceName>(GetCafeMakerEntityUrl<PlaceName>(CAFE_MAKER_URL, 3000)));
                 await Task.WhenAll(tasks);
                 Logger.Info("Finished CafeMakerDataUpdate in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
                 return true;
@@ -143,6 +136,13 @@ namespace GatheringTimer.Data.Update.ApiSync
 
         }
 
+        public static void ClearCache()
+        {
+            ItemCache = default;
+            SpearfishingItemCache = default;
+            PlaceNameCache = default;
+            GC.Collect();
+        }
 
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 
-namespace GatheringTimer.Data.Model.Vo.CafeMakerVo
+namespace GatheringTimer.Data.ThirdParty.CafeMaker
 {
     public class Pagination
     {
@@ -22,13 +22,28 @@ namespace GatheringTimer.Data.Model.Vo.CafeMakerVo
         public int? ResultsTotal { get; set; }
     }
 
-    /// <summary>
-    /// XIV Item Data
-    /// </summary>
     public class Item
     {
-        public int?  ID { get; set; }
-        public String Name_chs { get; set; }
+        public int? ID { get; set; }
+        public string Name_chs { get; set; }
+        public string Description_chs { get; set; }
+
+    }
+
+    public class SpearfishingItem
+    {
+        public int? ID { get; set; }
+
+        public string Description_chs { get; set; }
+
+    }
+
+    public class PlaceName
+    {
+        public int? ID { get; set; }
+
+        public string Name_chs { get; set; }
+
     }
 
 }

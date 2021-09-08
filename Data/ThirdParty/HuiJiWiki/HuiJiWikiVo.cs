@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GatheringTimer.Data.Model.Vo.HuiJiWikiVo
+namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
 {
 
     public class GatheringPointBaseExtension

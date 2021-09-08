@@ -76,9 +76,6 @@
     <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiUpdater.cs" />
     <Compile Include="Data\ThirdParty\XIVApi\XIVApiUpdater.cs" />
     <Compile Include="Data\ThirdParty\Updater.cs" />
-    <Compile Include="Data\ThirdParty\CafeMaker\CafeMakerConfig.cs" />
-    <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiConfig.cs" />
-    <Compile Include="Data\ThirdParty\XIVApi\XIVApiConfig.cs" />
     <Compile Include="GatheringTimer.cs" />
     <Compile Include="Data\Database\DataToModel.cs" />
     <Compile Include="Data\Database\SQLiteDatabase.cs" />

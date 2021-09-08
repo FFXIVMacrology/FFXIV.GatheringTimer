@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace GatheringTimer
 {
-    interface IGatheringTimer {
+    interface IGatheringTimer
+    {
 
     }
 
@@ -27,7 +28,7 @@ namespace GatheringTimer
 
             try
             {
-                List<Data.Model.Vo.DisplayVo.Item> items = await Service.GetItems(searchStr);
+                List<Data.Model.DisplayVo.Item> items = await Service.GetItems(searchStr);
                 gatheringTimerForm.ItemList_SetContent(items);
             }
             catch (Exception ex)
@@ -42,7 +43,7 @@ namespace GatheringTimer
 
             try
             {
-                Data.Model.Vo.DisplayVo.Item item = await Service.GetItemDetail(itemID);
+                Data.Model.DisplayVo.Item item = await Service.GetItemDetail(itemID);
                 gatheringTimerForm.DetailList_SetContent(item);
             }
             catch (Exception ex)

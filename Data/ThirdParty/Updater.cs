@@ -7,17 +7,26 @@ using System.Reflection;
 using System.Threading.Tasks;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Data.Model.Entity;
-using GatheringTimer.Data.Update.ApiSync;
-using GatheringTimer.Data.Update.Config;
 using GatheringTimer.Util;
 
-namespace GatheringTimer.Data.Update
+namespace GatheringTimer.Data.ThirdParty
 {
     public static class Updater
     {
-        private static readonly Dictionary<String, String> config = DataConfig.ConfigInitialization();
+        private static readonly Dictionary<String, String> config = Data.DataConfig.ConfigInitialization();
 
         private static readonly SQLiteDatabase sqliteDatabase = new SQLiteDatabase();
+
+        public static List<Item> ItemCache { get; set; } = default;
+        public static List<GatheringItem> GatheringItemCache { get; set; } = default;
+        public static List<SpearfishingItem> SpearfishingItemCache { get; set; } = default;
+        public static List<GatheringPointBase> GatheringPointBaseCache { get; set; } = default;
+        public static List<GatheringPointBaseExtension> GatheringPointBaseExtensionCache { get; set; } = default;
+        public static List<TimeConditionExtension> TimeConditionExtensionCache { get; set; } = default;
+        public static List<GatheringPoint> GatheringPointCache { get; set; } = default;
+        public static List<PlaceName> PlaceNameCache { get; set; } = default;
+        public static List<TerritoryType> TerritoryTypeCache { get; set; } = default;
+        public static List<Map> MapCache { get; set; } = default;
 
         public static SQLiteDatabase GetSQLiteDatabase()
         {
@@ -148,57 +157,58 @@ namespace GatheringTimer.Data.Update
             return tList;
         }
 
-        private static async Task<bool> Sync<T,Q>(SQLiteDatabase cache) {
+        private static void IntoCache<T>(List<T> tlist)
+        {
+            typeof(Updater).GetProperty(typeof(T).Name + "Cache").SetValue(typeof(Updater), tlist);
+        }
 
-            List<Q> cacheEntities = await cache.Select<Q>(
-                new List<string>(),
-                new List<string>(),
-                Activator.CreateInstance<Q>()
-            ); 
-            List<T> entities = ConvertTo<T,Q>(cacheEntities);
+        public static void ClearCache()
+        {
+            ItemCache = default;
+            GatheringItemCache = default;
+            SpearfishingItemCache = default;
+            GatheringPointBaseCache = default;
+            GatheringPointBaseExtensionCache = default;
+            TimeConditionExtensionCache = default;
+            GatheringPointCache = default;
+            PlaceNameCache = default;
+            TerritoryTypeCache = default;
+            MapCache = default;
+            GC.Collect();
+        }
+
+        private static async Task<bool> Sync<T, Q>(Type updater)
+        {
+            List<Q> cacheEntities = (List<Q>)updater.GetProperty(typeof(T).Name + "Cache").GetValue(typeof(T));
+            List<T> entities = ConvertTo<T, Q>(cacheEntities);
+            IntoCache<T>(entities);
             await sqliteDatabase.InsertRowByRow<T>(entities);
             return true;
 
         }
 
-        private static async Task<bool> SyncSource() {
-            Logger.Info("Sync Raw Start!");
-            SQLiteDatabase XIVApiCache = XIVApiUpdater.GetSQLiteDatabase();
-            await Sync<Item, Model.Vo.XIVApiVo.Item>(XIVApiCache);
-            await Sync<GatheringItem, Model.Vo.XIVApiVo.GatheringItem>(XIVApiCache);
-            await Sync<SpearfishingItem, Model.Vo.XIVApiVo.SpearfishingItem>(XIVApiCache);
-            await Sync<GatheringPointBase, Model.Vo.XIVApiVo.GatheringPointBase>(XIVApiCache);
-            await Sync<GatheringPoint, Model.Vo.XIVApiVo.GatheringPoint>(XIVApiCache);
-            await Sync<PlaceName, Model.Vo.XIVApiVo.PlaceName>(XIVApiCache);
-            await Sync<TerritoryType, Model.Vo.XIVApiVo.TerritoryType>(XIVApiCache);
-            await Sync<Map, Model.Vo.XIVApiVo.Map>(XIVApiCache);
+        private static async Task<bool> SyncSource()
+        {
+            await Sync<Item, XIVApi.Item>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<GatheringItem, XIVApi.GatheringItem>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<SpearfishingItem, XIVApi.SpearfishingItem>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<GatheringPointBase, XIVApi.GatheringPointBase>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<GatheringPoint, XIVApi.GatheringPoint>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<PlaceName, XIVApi.PlaceName>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<TerritoryType, XIVApi.TerritoryType>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<Map, XIVApi.Map>(typeof(XIVApi.XIVApiUpdater));
+            XIVApi.XIVApiUpdater.ClearCache();
             Logger.Info("Sync Raw Finish!");
             return true;
-
-
         }
 
         private static async Task<bool> SyncRawCHS()
         {
-            Logger.Info("Sync CHS Start!");
-            SQLiteDatabase XIVApiCache = XIVApiUpdater.GetSQLiteDatabase();
-            List<Model.Vo.XIVApiVo.Item> XIVApiItems = await XIVApiCache.Select<Model.Vo.XIVApiVo.Item>(
-                new List<string>(),
-                new List<string>(),
-                new Model.Vo.XIVApiVo.Item()
-            );
-            List<Item> items = ConvertTo<Item, Model.Vo.XIVApiVo.Item>(XIVApiItems);
-            SQLiteDatabase CafeMakerCache = CafeMakerUpdater.GetSQLiteDatabase();
-            List<Model.Vo.CafeMakerVo.Item> CafeMakerItems = await CafeMakerCache.Select<Model.Vo.CafeMakerVo.Item>(
-                new List<string>(),
-                new List<string>(),
-                new Model.Vo.CafeMakerVo.Item()
-            );
             await Task.Run(() =>
             {
-                foreach (Item item in items)
+                foreach (Item item in ItemCache)
                 {
-                    foreach (Model.Vo.CafeMakerVo.Item itemCHS in CafeMakerItems)
+                    foreach (CafeMaker.Item itemCHS in CafeMaker.CafeMakerUpdater.ItemCache)
                     {
                         if (item.ID == itemCHS.ID)
                         {
@@ -209,39 +219,70 @@ namespace GatheringTimer.Data.Update
                     }
                 }
             });
+            await sqliteDatabase.UpdateRowByRow<Item>(ItemCache, new List<string> { "Name_chs" }, new List<string> { "ID" });
+            await Task.Run(() =>
+            {
+                foreach (SpearfishingItem spearfishingItem in SpearfishingItemCache)
+                {
+                    foreach (CafeMaker.SpearfishingItem CafeMakerSpearfishingItemsCHS in CafeMaker.CafeMakerUpdater.SpearfishingItemCache)
+                    {
+                        if (spearfishingItem.ID == CafeMakerSpearfishingItemsCHS.ID)
+                        {
+                            spearfishingItem.Description_chs = CafeMakerSpearfishingItemsCHS.Description_chs;
+                            break;
+                        }
 
-            await sqliteDatabase.UpdateRowByRow<Model.Entity.Item>(items,new List<string> { "Name_chs" },new List<string>{ "ID" });
+                    }
+                }
+            });
+            await sqliteDatabase.UpdateRowByRow<SpearfishingItem>(SpearfishingItemCache, new List<string> { "Description_chs" }, new List<string> { "ID" });
+            await Task.Run(() =>
+            {
+                foreach (PlaceName placeName in PlaceNameCache)
+                {
+                    foreach (CafeMaker.PlaceName placeNameCHS in CafeMaker.CafeMakerUpdater.PlaceNameCache)
+                    {
+                        if (placeName.ID == placeNameCHS.ID)
+                        {
+                            placeName.Name_chs = placeNameCHS.Name_chs;
+                            break;
+                        }
+
+                    }
+                }
+            });
+            await sqliteDatabase.UpdateRowByRow<PlaceName>(PlaceNameCache, new List<string> { "Name_chs" }, new List<string> { "ID" });
             Logger.Info("Sync CHS Finish!");
+            CafeMaker.CafeMakerUpdater.ClearCache();
             return true;
 
         }
 
         private static async Task<bool> SyncExtension()
         {
-            Logger.Info("Sync GatheringPointBaseExtension Start!");
-            SQLiteDatabase HuiJiWikiCache = HuiJiWikiUpdater.GetSQLiteDatabase();
-            await Sync<GatheringPointBaseExtension, Model.Vo.HuiJiWikiVo.GatheringPointBaseExtension>(HuiJiWikiCache);
-            await Sync<TimeConditionExtension, Model.Vo.HuiJiWikiVo.TimeConditionExtension>(HuiJiWikiCache);
+            await Sync<GatheringPointBaseExtension, HuiJiWiki.GatheringPointBaseExtension>(typeof(HuiJiWiki.HuiJiWikiUpdater));
+            await Sync<TimeConditionExtension, HuiJiWiki.TimeConditionExtension>(typeof(HuiJiWiki.HuiJiWikiUpdater));
+            HuiJiWiki.HuiJiWikiUpdater.ClearCache();
             Logger.Info("Sync GatheringPointBaseExtension Finish!");
             return true;
         }
 
         public static async Task<bool> SyncRaw()
         {
-            Logger.Info("Sync RawData Start!");
 
             await CacheInitialization();
 
-            Task<bool> rawUpdate = XIVApiUpdater.XIVApiDataUpdate();
-            Task<bool> chsUpdate = CafeMakerUpdater.CafeMakerDataUpdate();
-            Task<bool> hjwUpdate = HuiJiWikiUpdater.HuiJiWikiDataUpdate();
+            Task<bool> rawUpdate = XIVApi.XIVApiUpdater.XIVApiDataUpdate();
+            Task<bool> chsUpdate = CafeMaker.CafeMakerUpdater.CafeMakerDataUpdate();
+            Task<bool> hjwUpdate = HuiJiWiki.HuiJiWikiUpdater.HuiJiWikiDataUpdate();
             await Task.WhenAll(rawUpdate, chsUpdate, hjwUpdate);
             if (!rawUpdate.Result)
             {
                 Logger.Error("Raw Data Sync Fail!");
                 return false;
             }
-            else {
+            else
+            {
 
                 await SyncSource();
             }
@@ -272,6 +313,7 @@ namespace GatheringTimer.Data.Update
             {
                 Logger.Error("Sync Data Fail!");
             }
+            ClearCache();
             Logger.Info("Sync Cache Finish!");
             return true;
         }

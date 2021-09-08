@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Data.Model;
-using GatheringTimer.Data.Update;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Data;
@@ -36,7 +35,7 @@ namespace GatheringTimer.Data
     {
         public static async Task<bool> Sync()
         {
-            return await Updater.SyncRaw();
+            return await ThirdParty.Updater.SyncRaw();
         }
     }
 }

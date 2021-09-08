@@ -44,6 +44,8 @@ namespace GatheringTimer.Data.Model.Entity
 
         public string Description_ja { get; set; }
 
+        public string Description_chs { get; set; }
+
         public string FishingRecordTypeTarget { get; set; }
 
         public int? FishingRecordTypeTargetID { get; set; }
@@ -144,6 +146,8 @@ namespace GatheringTimer.Data.Model.Entity
         public string Name_fr { get; set; }
 
         public string Name_ja { get; set; }
+
+        public string Name_chs { get; set; }
     }
 
     public class TerritoryType

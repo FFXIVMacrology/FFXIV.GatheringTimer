@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GatheringTimer.Data.Update
+namespace GatheringTimer.Data
 {
     public static class DataConfig
     {
