@@ -85,7 +85,9 @@
     <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiVo.cs" />
     <Compile Include="Data\ThirdParty\CafeMaker\CafeMakerVo.cs" />
     <Compile Include="Data\ThirdParty\XIVApi\XIVApiVo.cs" />
-    <Compile Include="Util\EorzeaDateTimeExtension.cs" />
+    <Compile Include="Timer\EorzeaTimer.cs" />
+    <Compile Include="Timer\TimerManagement.cs" />
+    <Compile Include="Timer\EorzeaDateTimeExtension.cs" />
     <Compile Include="Util\RestClient.cs" />
     <Compile Include="Util\RequestUtil.cs" />
     <Compile Include="GameInfo\InfoManagement.cs" />

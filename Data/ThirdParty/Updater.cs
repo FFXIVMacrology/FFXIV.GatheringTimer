@@ -13,7 +13,7 @@ namespace GatheringTimer.Data.ThirdParty
 {
     public static class Updater
     {
-        private static readonly Dictionary<String, String> config = Data.DataConfig.ConfigInitialization();
+        private static readonly Dictionary<String, String> config = DataConfig.ConfigInitialization();
 
         private static readonly SQLiteDatabase sqliteDatabase = new SQLiteDatabase();
 

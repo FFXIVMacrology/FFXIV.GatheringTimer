@@ -296,7 +296,8 @@ namespace GatheringTimer
                                             }
 
                                             string location = "";
-                                            if (gatheringPointBase.GatheringPointBaseExtension != null) {
+                                            if (gatheringPointBase.GatheringPointBaseExtension != null)
+                                            {
                                                 location = "(X:" + gatheringPointBase.GatheringPointBaseExtension.LocationX + ",Y:" + gatheringPointBase.GatheringPointBaseExtension.LocationY + ")";
                                             }
 
@@ -321,5 +322,158 @@ namespace GatheringTimer
 
         }
 
+        public static async Task<Data.Model.DisplayVo.GatheringPointBase> GetGatheringPointBaseDetail(int gatheringPointBaseId)
+        {
+            await LoadSource(false);
+            List<GatheringPointBase> gatheringPointBases =
+                (from gatheringPointBaseEntity in gatheringPointBaseCache
+                 where gatheringPointBaseEntity.ID == gatheringPointBaseId
+                 select gatheringPointBaseEntity).ToList<GatheringPointBase>();
+
+            if (gatheringPointBases.Count > 0)
+            {
+                Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = ConvertTo<Data.Model.DisplayVo.GatheringPointBase, GatheringPointBase>(gatheringPointBases).First();
+                List<GatheringPointBaseExtension> exEntities =
+                   (from gatheringPointBaseExtension in gatheringPointBaseExtensionCache
+                    where gatheringPointBaseExtension.ID == gatheringPointBase.ID
+                    select gatheringPointBaseExtension).ToList<GatheringPointBaseExtension>();
+                if (exEntities.Count > 0)
+                {
+                    gatheringPointBase.GatheringPointBaseExtension = ConvertTo<Data.Model.DisplayVo.GatheringPointBaseExtension, GatheringPointBaseExtension>(exEntities).First();
+                }
+                List<TimeConditionExtension> timeEntities =
+                   (from timeConditionExtension in timeConditionExtensionCache
+                    where timeConditionExtension.GatheringPointBaseId == gatheringPointBase.ID
+                    select timeConditionExtension).ToList<TimeConditionExtension>();
+                if (timeEntities.Count > 0)
+                {
+                    gatheringPointBase.TimeConditionExtension = ConvertTo<Data.Model.DisplayVo.TimeConditionExtension, TimeConditionExtension>(timeEntities);
+                }
+                List<GatheringPoint> pointEntities =
+                   (from gatheringPoint in gatheringPointCache
+                    where gatheringPoint.GatheringPointBaseTargetID == gatheringPointBase.ID
+                    select gatheringPoint).ToList<GatheringPoint>();
+                if (pointEntities.Count > 0)
+                {
+                    gatheringPointBase.GatheringPoint = ConvertTo<Data.Model.DisplayVo.GatheringPoint, GatheringPoint>(pointEntities);
+                    foreach (Data.Model.DisplayVo.GatheringPoint gatheringPoint in gatheringPointBase.GatheringPoint)
+                    {
+                        List<PlaceName> placeEntities =
+                         (from placeName in placeNameCache
+                          where placeName.ID == gatheringPoint.PlaceNameTargetID
+                          select placeName).ToList<PlaceName>();
+                        if (placeEntities.Count > 0)
+                        {
+                            gatheringPoint.PlaceName = ConvertTo<Data.Model.DisplayVo.PlaceName, PlaceName>(placeEntities).First();
+                        }
+                        List<TerritoryType> territoryEntities =
+                          (from territoryType in territoryTypeCache
+                           where territoryType.ID == gatheringPoint.TerritoryTypeTargetID
+                           select territoryType).ToList<TerritoryType>();
+                        if (territoryEntities.Count > 0)
+                        {
+                            gatheringPoint.TerritoryType = ConvertTo<Data.Model.DisplayVo.TerritoryType, TerritoryType>(territoryEntities).First();
+
+                            List<PlaceName> trrPlaceEntities =
+                                (from placeName in placeNameCache
+                                 where placeName.ID == gatheringPoint.TerritoryType.PlaceNameTargetID
+                                 select placeName).ToList<PlaceName>();
+                            if (trrPlaceEntities.Count > 0)
+                            {
+                                gatheringPoint.TerritoryType.PlaceName = ConvertTo<Data.Model.DisplayVo.PlaceName, PlaceName>(trrPlaceEntities).First();
+                            }
+                            List<PlaceName> trrPlaceRegionEntities =
+                                (from placeName in placeNameCache
+                                 where placeName.ID == gatheringPoint.TerritoryType.PlaceNameRegionTargetID
+                                 select placeName).ToList<PlaceName>();
+                            if (trrPlaceRegionEntities.Count > 0)
+                            {
+                                gatheringPoint.TerritoryType.PlaceNameRegion = ConvertTo<Data.Model.DisplayVo.PlaceName, PlaceName>(trrPlaceRegionEntities).First();
+                            }
+                            List<PlaceName> trrPlaceZoneEntities =
+                                (from placeName in placeNameCache
+                                 where placeName.ID == gatheringPoint.TerritoryType.PlaceNameZoneTargetID
+                                 select placeName).ToList<PlaceName>();
+                            if (trrPlaceZoneEntities.Count > 0)
+                            {
+                                gatheringPoint.TerritoryType.PlaceNameZone = ConvertTo<Data.Model.DisplayVo.PlaceName, PlaceName>(trrPlaceZoneEntities).First();
+                            }
+                            List<Map> mapEntities =
+                              (from map in mapCache
+                               where map.ID == gatheringPoint.TerritoryType.MapTargetID
+                               select map).ToList<Map>();
+                            if (mapEntities.Count > 0)
+                            {
+                                gatheringPoint.TerritoryType.Map = ConvertTo<Data.Model.DisplayVo.Map, Map>(mapEntities).First();
+
+                                List<PlaceName> mapPlaceEntities =
+                                    (from placeName in placeNameCache
+                                     where placeName.ID == gatheringPoint.TerritoryType.Map.PlaceNameTargetID
+                                     select placeName).ToList<PlaceName>();
+                                if (mapPlaceEntities.Count > 0)
+                                {
+                                    gatheringPoint.TerritoryType.Map.PlaceName = ConvertTo<Data.Model.DisplayVo.PlaceName, PlaceName>(mapPlaceEntities).First();
+                                }
+                                List<PlaceName> mapPlaceRegionEntities =
+                                    (from placeName in placeNameCache
+                                     where placeName.ID == gatheringPoint.TerritoryType.Map.PlaceNameRegionTargetID
+                                     select placeName).ToList<PlaceName>();
+                                if (mapPlaceRegionEntities.Count > 0)
+                                {
+                                    gatheringPoint.TerritoryType.Map.PlaceNameRegion = ConvertTo<Data.Model.DisplayVo.PlaceName, PlaceName>(mapPlaceRegionEntities).First();
+                                }
+
+                                string location = "";
+                                if (gatheringPointBase.GatheringPointBaseExtension != null)
+                                {
+                                    location = "(X:" + gatheringPointBase.GatheringPointBaseExtension.LocationX + ",Y:" + gatheringPointBase.GatheringPointBaseExtension.LocationY + ")";
+                                }
+
+                                gatheringPointBase.displayStr =
+                                    gatheringPoint.TerritoryType.PlaceName.Name_chs
+                                    + location
+                                    + gatheringPoint.PlaceName.Name_chs;
+                            }
+
+
+                        }
+                    }
+                }
+
+                return gatheringPointBase;
+            }
+            return null;
+        }
+
+        public static DateTime RecentGatheringTime(int gatheringPointBaseId)
+        {
+            Task<Data.Model.DisplayVo.GatheringPointBase> task = GetGatheringPointBaseDetail(gatheringPointBaseId);
+            Task.WaitAll(task);
+            Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = task.Result;
+            if (gatheringPointBase != null && gatheringPointBase.TimeConditionExtension != null)
+            {
+                DateTime eorzeaDate = Timer.EorzeaDateTimeExtension.ToEorzeaTime(DateTime.Now);
+                int eorzeaHour = int.Parse(eorzeaDate.ToString("HH"));
+                int compare = 48;
+
+
+                foreach (Data.Model.DisplayVo.TimeConditionExtension timeConditionExtension in gatheringPointBase.TimeConditionExtension)
+                {
+                    int hour = (int)timeConditionExtension.Hour;
+                    if (hour - eorzeaHour <= 0)
+                    {
+                        hour += 24;
+                    }
+                    if (hour - eorzeaHour <= compare)
+                    {
+                        compare = hour - eorzeaHour;
+                    }
+
+                }
+
+                return DateTime.Parse(eorzeaDate.AddHours(compare).ToString("MM/dd/yyyy HH") + ":00:00"); 
+            }
+            return new DateTime();
+        }
     }
 }

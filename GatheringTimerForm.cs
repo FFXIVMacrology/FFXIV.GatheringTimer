@@ -56,9 +56,12 @@ namespace GatheringTimer
             this.detailList = new System.Windows.Forms.ListBox();
             this.timerTab = new System.Windows.Forms.TabPage();
             this.configTab = new System.Windows.Forms.TabPage();
+            this.EorzeaTimer = new System.Windows.Forms.DataGridView();
             this.tabControlGlobal.SuspendLayout();
             this.pointTab.SuspendLayout();
+            this.timerTab.SuspendLayout();
             this.configTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EorzeaTimer)).BeginInit();
             this.SuspendLayout();
             // 
             // searchLabel
@@ -80,11 +83,11 @@ namespace GatheringTimer
             // 
             // textBoxLogger
             // 
-            this.textBoxLogger.Location = new System.Drawing.Point(31, 92);
+            this.textBoxLogger.Location = new System.Drawing.Point(7, 323);
             this.textBoxLogger.Multiline = true;
             this.textBoxLogger.Name = "textBoxLogger";
             this.textBoxLogger.ReadOnly = true;
-            this.textBoxLogger.Size = new System.Drawing.Size(516, 91);
+            this.textBoxLogger.Size = new System.Drawing.Size(617, 76);
             this.textBoxLogger.TabIndex = 2;
             // 
             // syncData
@@ -112,10 +115,10 @@ namespace GatheringTimer
             this.tabControlGlobal.Controls.Add(this.pointTab);
             this.tabControlGlobal.Controls.Add(this.timerTab);
             this.tabControlGlobal.Controls.Add(this.configTab);
-            this.tabControlGlobal.Location = new System.Drawing.Point(3, 0);
+            this.tabControlGlobal.Location = new System.Drawing.Point(3, 3);
             this.tabControlGlobal.Name = "tabControlGlobal";
             this.tabControlGlobal.SelectedIndex = 0;
-            this.tabControlGlobal.Size = new System.Drawing.Size(677, 353);
+            this.tabControlGlobal.Size = new System.Drawing.Size(625, 314);
             this.tabControlGlobal.TabIndex = 8;
             // 
             // pointTab
@@ -127,7 +130,7 @@ namespace GatheringTimer
             this.pointTab.Location = new System.Drawing.Point(4, 22);
             this.pointTab.Name = "pointTab";
             this.pointTab.Padding = new System.Windows.Forms.Padding(3);
-            this.pointTab.Size = new System.Drawing.Size(669, 327);
+            this.pointTab.Size = new System.Drawing.Size(617, 288);
             this.pointTab.TabIndex = 0;
             this.pointTab.Text = "采集点";
             this.pointTab.UseVisualStyleBackColor = true;
@@ -140,43 +143,58 @@ namespace GatheringTimer
             this.detailList.Name = "detailList";
             this.detailList.Size = new System.Drawing.Size(305, 124);
             this.detailList.TabIndex = 8;
+            this.detailList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DetailList_MouseDoubleClick);
             // 
             // timerTab
             // 
+            this.timerTab.Controls.Add(this.EorzeaTimer);
             this.timerTab.Location = new System.Drawing.Point(4, 22);
             this.timerTab.Name = "timerTab";
             this.timerTab.Padding = new System.Windows.Forms.Padding(3);
-            this.timerTab.Size = new System.Drawing.Size(669, 327);
+            this.timerTab.Size = new System.Drawing.Size(617, 288);
             this.timerTab.TabIndex = 1;
             this.timerTab.Text = "定时器";
             this.timerTab.UseVisualStyleBackColor = true;
             // 
             // configTab
             // 
-            this.configTab.Controls.Add(this.textBoxLogger);
             this.configTab.Controls.Add(this.syncData);
             this.configTab.Location = new System.Drawing.Point(4, 22);
             this.configTab.Name = "configTab";
             this.configTab.Padding = new System.Windows.Forms.Padding(3);
-            this.configTab.Size = new System.Drawing.Size(669, 327);
+            this.configTab.Size = new System.Drawing.Size(617, 288);
             this.configTab.TabIndex = 1;
             this.configTab.Text = "设置";
             this.configTab.UseVisualStyleBackColor = true;
+            // 
+            // EorzeaTimer
+            // 
+            this.EorzeaTimer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.EorzeaTimer.Location = new System.Drawing.Point(6, 6);
+            this.EorzeaTimer.Name = "EorzeaTimer";
+            this.EorzeaTimer.RowTemplate.Height = 23;
+            this.EorzeaTimer.Size = new System.Drawing.Size(605, 276);
+            this.EorzeaTimer.TabIndex = 1;
+            this.EorzeaTimer.ReadOnly = true;
+            this.EorzeaTimer.DataSource = Timer.TimerManagement.eorzeaTimers;
             // 
             // GatheringTimerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.textBoxLogger);
             this.Controls.Add(this.tabControlGlobal);
             this.Name = "GatheringTimerForm";
-            this.Size = new System.Drawing.Size(680, 353);
+            this.Size = new System.Drawing.Size(634, 409);
             this.Load += new System.EventHandler(this.GatheringTimerForm_Load);
             this.tabControlGlobal.ResumeLayout(false);
             this.pointTab.ResumeLayout(false);
             this.pointTab.PerformLayout();
+            this.timerTab.ResumeLayout(false);
             this.configTab.ResumeLayout(false);
-            this.configTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EorzeaTimer)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -191,6 +209,7 @@ namespace GatheringTimer
         private TabPage timerTab;
         private TabPage configTab;
         private ListBox detailList;
+        private DataGridView EorzeaTimer;
         private System.Windows.Forms.Label searchLabel;
 
         #endregion
@@ -375,29 +394,11 @@ namespace GatheringTimer
 
                     foreach (Data.Model.DisplayVo.GatheringPointBase gatheringPointBase in gatheringPointBases)
                     {
-                        if (gatheringPointBase.GatheringPointBaseExtension!=null&& gatheringPointBase.GatheringPoint != null) {
-                            //string trr = default;
-                            //string area = default;
-                            //string location = "(X:"+ gatheringPointBase.GatheringPointBaseExtension.LocationX+",Y:"+ gatheringPointBase.GatheringPointBaseExtension.LocationY+")";
-                            
-                            //foreach (Data.Model.DisplayVo.GatheringPoint gatheringPoint in gatheringPointBase.GatheringPoint)
-                            //{
-                            //    if (gatheringPoint.TerritoryType.PlaceName != null)
-                            //    {
-                            //        trr = gatheringPoint.TerritoryType.PlaceName.Name_chs;
-                            //    }
-
-                            //    if (gatheringPoint.PlaceName != null)
-                            //    {
-                            //        area = gatheringPoint.PlaceName.Name_chs;
-                            //    }
-                            //    if (trr != null && area != null) break;
-                            //}
-                            //gatheringPointBase.displayStr = trr+location+area;
+                        if (gatheringPointBase.GatheringPointBaseExtension != null && gatheringPointBase.GatheringPoint != null)
+                        {
                             this.detailList.Items.Add(gatheringPointBase);
                             this.detailList.ValueMember = "ID";
                             this.detailList.DisplayMember = "displayStr";
-
                         }
 
                     }
@@ -406,5 +407,26 @@ namespace GatheringTimer
                 }
             }
         }
+
+        private async void DetailList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = this.detailList.IndexFromPoint(e.Location);
+            if (index != System.Windows.Forms.ListBox.NoMatches)
+            {
+                int gatheringPointBaseID = int.Parse(this.detailList.Items[index].GetType().GetProperty("ID").GetValue(this.detailList.Items[index]).ToString());
+                Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = await Service.GetGatheringPointBaseDetail(gatheringPointBaseID);
+                if (gatheringPointBase != null && gatheringPointBase.TimeConditionExtension != null)
+                {
+                    await GatheringTimer.CreateTimer(this,gatheringPointBaseID);
+                }
+
+            }
+        }
+
+        public void EorzeaTimer_Refresh()
+        {
+            this.EorzeaTimer.Refresh();
+        }
+
     }
 }

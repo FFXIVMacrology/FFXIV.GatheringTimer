@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GatheringTimer.Util
+namespace GatheringTimer.Timer
 {
     public static class EorzeaDateTimeExtension
     {
@@ -20,5 +20,17 @@ namespace GatheringTimer.Util
 
             return new DateTime(eorzeaTicks);
         }
+
+        public static DateTime ToLocalTime(this DateTime eorzeaDate)
+        {
+            const double EORZEA_MULTIPLIER = 3600D / 175D;
+            
+            long epochTicks = (long)Math.Round(((double)eorzeaDate.Ticks) / EORZEA_MULTIPLIER);
+
+            long localTicks = epochTicks + new DateTime(1970, 1, 1).Ticks;
+
+            return new DateTime(localTicks).ToLocalTime();
+        }
+
     }
 }

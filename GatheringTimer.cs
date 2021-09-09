@@ -53,5 +53,23 @@ namespace GatheringTimer
 
         }
 
+        public static async Task CreateTimer(GatheringTimerForm gatheringTimerForm, int gatheringPointId)
+        {
+
+
+
+            try
+            {
+                Timer.TimerManagement.CreateTimer(gatheringPointId);
+                gatheringTimerForm.EorzeaTimer_Refresh();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Timer Error!Exception:" + ex.Message);
+            }
+
+
+        }
+
     }
 }
