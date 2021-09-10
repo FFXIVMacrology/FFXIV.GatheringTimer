@@ -301,10 +301,12 @@ namespace GatheringTimer
                                                 location = "(X:" + gatheringPointBase.GatheringPointBaseExtension.LocationX + ",Y:" + gatheringPointBase.GatheringPointBaseExtension.LocationY + ")";
                                             }
 
-                                            gatheringPointBase.displayStr =
-                                                gatheringPoint.TerritoryType.PlaceName.Name_chs
-                                                + location
-                                                + gatheringPoint.PlaceName.Name_chs;
+                                            gatheringPointBase.Description = gatheringPoint.TerritoryType.PlaceName.Name + location + gatheringPoint.PlaceName.Name;
+                                            gatheringPointBase.Description_de = gatheringPoint.TerritoryType.PlaceName.Name_de + location + gatheringPoint.PlaceName.Name_de;
+                                            gatheringPointBase.Description_en = gatheringPoint.TerritoryType.PlaceName.Name_en + location + gatheringPoint.PlaceName.Name_en;
+                                            gatheringPointBase.Description_fr = gatheringPoint.TerritoryType.PlaceName.Name_fr + location + gatheringPoint.PlaceName.Name_fr;
+                                            gatheringPointBase.Description_ja = gatheringPoint.TerritoryType.PlaceName.Name_ja + location + gatheringPoint.PlaceName.Name_ja;
+                                            gatheringPointBase.Description_chs = gatheringPoint.TerritoryType.PlaceName.Name_chs + location + gatheringPoint.PlaceName.Name_chs;
                                         }
 
 
@@ -429,10 +431,12 @@ namespace GatheringTimer
                                     location = "(X:" + gatheringPointBase.GatheringPointBaseExtension.LocationX + ",Y:" + gatheringPointBase.GatheringPointBaseExtension.LocationY + ")";
                                 }
 
-                                gatheringPointBase.displayStr =
-                                    gatheringPoint.TerritoryType.PlaceName.Name_chs
-                                    + location
-                                    + gatheringPoint.PlaceName.Name_chs;
+                                gatheringPointBase.Description = gatheringPoint.TerritoryType.PlaceName.Name + location + gatheringPoint.PlaceName.Name;
+                                gatheringPointBase.Description_de = gatheringPoint.TerritoryType.PlaceName.Name_de + location + gatheringPoint.PlaceName.Name_de;
+                                gatheringPointBase.Description_en = gatheringPoint.TerritoryType.PlaceName.Name_en + location + gatheringPoint.PlaceName.Name_en;
+                                gatheringPointBase.Description_fr = gatheringPoint.TerritoryType.PlaceName.Name_fr + location + gatheringPoint.PlaceName.Name_fr;
+                                gatheringPointBase.Description_ja = gatheringPoint.TerritoryType.PlaceName.Name_ja + location + gatheringPoint.PlaceName.Name_ja;
+                                gatheringPointBase.Description_chs = gatheringPoint.TerritoryType.PlaceName.Name_chs + location + gatheringPoint.PlaceName.Name_chs;
                             }
 
 
@@ -471,7 +475,7 @@ namespace GatheringTimer
 
                 }
 
-                return DateTime.Parse(eorzeaDate.AddHours(compare).ToString("MM/dd/yyyy HH") + ":00:00"); 
+                return DateTime.Parse(eorzeaDate.AddHours(compare).ToString("MM/dd/yyyy HH") + ":00:00");
             }
             return new DateTime();
         }

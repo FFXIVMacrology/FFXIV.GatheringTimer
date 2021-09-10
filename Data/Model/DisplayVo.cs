@@ -75,7 +75,17 @@ namespace GatheringTimer.Data.Model.DisplayVo
 
     public class GatheringPointBase
     {
-        public string displayStr { get; set; }
+        public string Description { get; set; }
+
+        public string Description_de { get; set; }
+
+        public string Description_en { get; set; }
+
+        public string Description_fr { get; set; }
+
+        public string Description_ja { get; set; }
+
+        public string Description_chs { get; set; }
         public int? GatheringLevel { get; set; }
         public string GatheringTypeTarget { get; set; }
         public int? GatheringTypeTargetID { get; set; }

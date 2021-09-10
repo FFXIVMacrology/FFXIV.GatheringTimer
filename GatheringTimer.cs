@@ -7,10 +7,6 @@ using System.Threading.Tasks;
 
 namespace GatheringTimer
 {
-    interface IGatheringTimer
-    {
-
-    }
 
     interface IGatheringTimerSource
     {
@@ -53,22 +49,34 @@ namespace GatheringTimer
 
         }
 
-        public static async Task CreateTimer(GatheringTimerForm gatheringTimerForm, int gatheringPointId)
+        public static async Task GetGatheringPointBaseDetail(GatheringTimerForm gatheringTimerForm, int gatheringPointBaseId)
         {
-
-
 
             try
             {
-                Timer.TimerManagement.CreateTimer(gatheringPointId);
-                gatheringTimerForm.EorzeaTimer_Refresh();
+                Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = await Service.GetGatheringPointBaseDetail(gatheringPointBaseId);
+                gatheringTimerForm.gatheringPointVIew_SetContent(gatheringPointBase);
             }
             catch (Exception ex)
             {
-                Logger.Error("Timer Error!Exception:" + ex.Message);
+                Logger.Error("Search Error!Exception:" + ex.Message);
             }
 
+        }
 
+        public static async Task CreateTimer(GatheringTimerForm gatheringTimerForm, int gatheringPointId)
+        {
+            await Task.Run(()=> {
+                try
+                {
+                    Timer.TimerManagement.CreateTimer(gatheringPointId);
+                    gatheringTimerForm.EorzeaTimer_SetContent(Timer.TimerManagement.eorzeaTimers);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Timer Error!Exception:" + ex.Message);
+                }
+            });
         }
 
     }

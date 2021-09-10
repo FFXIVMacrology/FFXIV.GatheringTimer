@@ -53,15 +53,20 @@ namespace GatheringTimer
             this.itemList = new System.Windows.Forms.ListBox();
             this.tabControlGlobal = new System.Windows.Forms.TabControl();
             this.pointTab = new System.Windows.Forms.TabPage();
-            this.detailList = new System.Windows.Forms.ListBox();
-            this.timerTab = new System.Windows.Forms.TabPage();
-            this.configTab = new System.Windows.Forms.TabPage();
             this.EorzeaTimer = new System.Windows.Forms.DataGridView();
+            this.EorzeaTimerColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EorzeaTimerColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EorzeaTimerColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EorzeaTimerColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gatheringPointVIewColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.detailList = new System.Windows.Forms.ListBox();
+            this.configTab = new System.Windows.Forms.TabPage();
+            this.gatheringPointVIew = new System.Windows.Forms.DataGridView();
             this.tabControlGlobal.SuspendLayout();
             this.pointTab.SuspendLayout();
-            this.timerTab.SuspendLayout();
-            this.configTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EorzeaTimer)).BeginInit();
+            this.configTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gatheringPointVIew)).BeginInit();
             this.SuspendLayout();
             // 
             // searchLabel
@@ -69,25 +74,25 @@ namespace GatheringTimer
             this.searchLabel.AutoSize = true;
             this.searchLabel.Location = new System.Drawing.Point(25, 14);
             this.searchLabel.Name = "searchLabel";
-            this.searchLabel.Size = new System.Drawing.Size(53, 12);
+            this.searchLabel.Size = new System.Drawing.Size(77, 12);
             this.searchLabel.TabIndex = 0;
-            this.searchLabel.Text = "查询相关";
+            this.searchLabel.Text = "查询采集物品";
             // 
             // searchBox
             // 
-            this.searchBox.Location = new System.Drawing.Point(27, 29);
+            this.searchBox.Location = new System.Drawing.Point(27, 39);
             this.searchBox.Name = "searchBox";
-            this.searchBox.Size = new System.Drawing.Size(138, 21);
+            this.searchBox.Size = new System.Drawing.Size(475, 21);
             this.searchBox.TabIndex = 1;
             this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
             // 
             // textBoxLogger
             // 
-            this.textBoxLogger.Location = new System.Drawing.Point(7, 323);
+            this.textBoxLogger.Location = new System.Drawing.Point(7, 365);
             this.textBoxLogger.Multiline = true;
             this.textBoxLogger.Name = "textBoxLogger";
             this.textBoxLogger.ReadOnly = true;
-            this.textBoxLogger.Size = new System.Drawing.Size(617, 76);
+            this.textBoxLogger.Size = new System.Drawing.Size(786, 82);
             this.textBoxLogger.TabIndex = 2;
             // 
             // syncData
@@ -96,7 +101,7 @@ namespace GatheringTimer
             this.syncData.Name = "syncData";
             this.syncData.Size = new System.Drawing.Size(67, 20);
             this.syncData.TabIndex = 6;
-            this.syncData.Text = "syncData";
+            this.syncData.Text = "从第三方同步数据";
             this.syncData.UseVisualStyleBackColor = true;
             this.syncData.Click += new System.EventHandler(this.SyncData_Click);
             // 
@@ -104,7 +109,7 @@ namespace GatheringTimer
             // 
             this.itemList.FormattingEnabled = true;
             this.itemList.ItemHeight = 12;
-            this.itemList.Location = new System.Drawing.Point(27, 56);
+            this.itemList.Location = new System.Drawing.Point(27, 77);
             this.itemList.Name = "itemList";
             this.itemList.Size = new System.Drawing.Size(138, 124);
             this.itemList.TabIndex = 7;
@@ -113,16 +118,17 @@ namespace GatheringTimer
             // tabControlGlobal
             // 
             this.tabControlGlobal.Controls.Add(this.pointTab);
-            this.tabControlGlobal.Controls.Add(this.timerTab);
             this.tabControlGlobal.Controls.Add(this.configTab);
             this.tabControlGlobal.Location = new System.Drawing.Point(3, 3);
             this.tabControlGlobal.Name = "tabControlGlobal";
             this.tabControlGlobal.SelectedIndex = 0;
-            this.tabControlGlobal.Size = new System.Drawing.Size(625, 314);
+            this.tabControlGlobal.Size = new System.Drawing.Size(794, 360);
             this.tabControlGlobal.TabIndex = 8;
             // 
             // pointTab
             // 
+            this.pointTab.Controls.Add(this.gatheringPointVIew);
+            this.pointTab.Controls.Add(this.EorzeaTimer);
             this.pointTab.Controls.Add(this.detailList);
             this.pointTab.Controls.Add(this.searchBox);
             this.pointTab.Controls.Add(this.itemList);
@@ -130,31 +136,78 @@ namespace GatheringTimer
             this.pointTab.Location = new System.Drawing.Point(4, 22);
             this.pointTab.Name = "pointTab";
             this.pointTab.Padding = new System.Windows.Forms.Padding(3);
-            this.pointTab.Size = new System.Drawing.Size(617, 288);
+            this.pointTab.Size = new System.Drawing.Size(786, 334);
             this.pointTab.TabIndex = 0;
             this.pointTab.Text = "采集点";
             this.pointTab.UseVisualStyleBackColor = true;
+            // 
+            // EorzeaTimer
+            // 
+            this.EorzeaTimer.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.EorzeaTimer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.EorzeaTimer.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.EorzeaTimerColumn1,
+            this.EorzeaTimerColumn2,
+            this.EorzeaTimerColumn3,
+            this.EorzeaTimerColumn4});
+            this.EorzeaTimer.Location = new System.Drawing.Point(27, 217);
+            this.EorzeaTimer.Name = "EorzeaTimer";
+            this.EorzeaTimer.ReadOnly = true;
+            this.EorzeaTimer.RowTemplate.Height = 23;
+            this.EorzeaTimer.Size = new System.Drawing.Size(475, 103);
+            this.EorzeaTimer.TabIndex = 1;
+            // 
+            // EorzeaTimerColumn1
+            // 
+            this.EorzeaTimerColumn1.HeaderText = "ID";
+            this.EorzeaTimerColumn1.Name = "ID";
+            this.EorzeaTimerColumn1.ReadOnly = true;
+            // 
+            // EorzeaTimerColumn2
+            // 
+            this.EorzeaTimerColumn2.HeaderText = "Name";
+            this.EorzeaTimerColumn2.Name = "Name";
+            this.EorzeaTimerColumn2.ReadOnly = true;
+            // 
+            // EorzeaTimerColumn3
+            // 
+            this.EorzeaTimerColumn3.HeaderText = "NextLocalTime";
+            this.EorzeaTimerColumn3.Name = "NextLocalTime";
+            this.EorzeaTimerColumn3.ReadOnly = true;
+            // 
+            // EorzeaTimerColumn4
+            // 
+            this.EorzeaTimerColumn4.HeaderText = "NextEorzeaTime";
+            this.EorzeaTimerColumn4.Name = "NextEorzeaTime";
+            this.EorzeaTimerColumn4.ReadOnly = true;
             // 
             // detailList
             // 
             this.detailList.FormattingEnabled = true;
             this.detailList.ItemHeight = 12;
-            this.detailList.Location = new System.Drawing.Point(197, 56);
+            this.detailList.Location = new System.Drawing.Point(197, 77);
             this.detailList.Name = "detailList";
             this.detailList.Size = new System.Drawing.Size(305, 124);
             this.detailList.TabIndex = 8;
             this.detailList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DetailList_MouseDoubleClick);
             // 
-            // timerTab
+            // gatheringPointVIew
             // 
-            this.timerTab.Controls.Add(this.EorzeaTimer);
-            this.timerTab.Location = new System.Drawing.Point(4, 22);
-            this.timerTab.Name = "timerTab";
-            this.timerTab.Padding = new System.Windows.Forms.Padding(3);
-            this.timerTab.Size = new System.Drawing.Size(617, 288);
-            this.timerTab.TabIndex = 1;
-            this.timerTab.Text = "定时器";
-            this.timerTab.UseVisualStyleBackColor = true;
+            this.gatheringPointVIew.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.gatheringPointVIew.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gatheringPointVIew.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.gatheringPointVIewColumn1});
+            this.gatheringPointVIew.Location = new System.Drawing.Point(508, 39);
+            this.gatheringPointVIew.Name = "gatheringPointVIew";
+            this.gatheringPointVIew.RowTemplate.Height = 23;
+            this.gatheringPointVIew.Size = new System.Drawing.Size(272, 281);
+            this.gatheringPointVIew.TabIndex = 9;
+            // 
+            // gatheringPointVIewColumn1
+            // 
+            this.gatheringPointVIewColumn1.HeaderText = "";
+            this.gatheringPointVIewColumn1.Name = "";
+            this.gatheringPointVIewColumn1.ReadOnly = true;
             // 
             // configTab
             // 
@@ -162,21 +215,10 @@ namespace GatheringTimer
             this.configTab.Location = new System.Drawing.Point(4, 22);
             this.configTab.Name = "configTab";
             this.configTab.Padding = new System.Windows.Forms.Padding(3);
-            this.configTab.Size = new System.Drawing.Size(617, 288);
+            this.configTab.Size = new System.Drawing.Size(786, 334);
             this.configTab.TabIndex = 1;
             this.configTab.Text = "设置";
             this.configTab.UseVisualStyleBackColor = true;
-            // 
-            // EorzeaTimer
-            // 
-            this.EorzeaTimer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.EorzeaTimer.Location = new System.Drawing.Point(6, 6);
-            this.EorzeaTimer.Name = "EorzeaTimer";
-            this.EorzeaTimer.RowTemplate.Height = 23;
-            this.EorzeaTimer.Size = new System.Drawing.Size(605, 276);
-            this.EorzeaTimer.TabIndex = 1;
-            this.EorzeaTimer.ReadOnly = true;
-            this.EorzeaTimer.DataSource = Timer.TimerManagement.eorzeaTimers;
             // 
             // GatheringTimerForm
             // 
@@ -185,14 +227,14 @@ namespace GatheringTimer
             this.Controls.Add(this.textBoxLogger);
             this.Controls.Add(this.tabControlGlobal);
             this.Name = "GatheringTimerForm";
-            this.Size = new System.Drawing.Size(634, 409);
+            this.Size = new System.Drawing.Size(800, 450);
             this.Load += new System.EventHandler(this.GatheringTimerForm_Load);
             this.tabControlGlobal.ResumeLayout(false);
             this.pointTab.ResumeLayout(false);
             this.pointTab.PerformLayout();
-            this.timerTab.ResumeLayout(false);
-            this.configTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.EorzeaTimer)).EndInit();
+            this.configTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gatheringPointVIew)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -206,10 +248,15 @@ namespace GatheringTimer
         private ListBox itemList;
         private TabControl tabControlGlobal;
         private TabPage pointTab;
-        private TabPage timerTab;
         private TabPage configTab;
         private ListBox detailList;
         private DataGridView EorzeaTimer;
+        private DataGridViewTextBoxColumn EorzeaTimerColumn1;
+        private DataGridViewTextBoxColumn EorzeaTimerColumn2;
+        private DataGridViewTextBoxColumn EorzeaTimerColumn3;
+        private DataGridViewTextBoxColumn EorzeaTimerColumn4;
+        private DataGridViewTextBoxColumn gatheringPointVIewColumn1;
+        private DataGridView gatheringPointVIew;
         private System.Windows.Forms.Label searchLabel;
 
         #endregion
@@ -398,7 +445,7 @@ namespace GatheringTimer
                         {
                             this.detailList.Items.Add(gatheringPointBase);
                             this.detailList.ValueMember = "ID";
-                            this.detailList.DisplayMember = "displayStr";
+                            this.detailList.DisplayMember = "Description_chs";
                         }
 
                     }
@@ -417,15 +464,56 @@ namespace GatheringTimer
                 Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = await Service.GetGatheringPointBaseDetail(gatheringPointBaseID);
                 if (gatheringPointBase != null && gatheringPointBase.TimeConditionExtension != null)
                 {
-                    await GatheringTimer.CreateTimer(this,gatheringPointBaseID);
+                    await GatheringTimer.CreateTimer(this, gatheringPointBaseID);
                 }
-
+                await GatheringTimer.GetGatheringPointBaseDetail(this, gatheringPointBaseID);
             }
         }
 
-        public void EorzeaTimer_Refresh()
+        public void EorzeaTimer_SetContent(List<Timer.EorzeaTimer> eorzeaTimers)
         {
+            this.EorzeaTimer.Rows.Clear();
+            foreach (Timer.EorzeaTimer eorzeaTimer in eorzeaTimers)
+            {
+                DataGridViewRow dataGridViewRow = new DataGridViewRow();
+                dataGridViewRow.Cells.Add(new DataGridViewTextBoxCell() { Value = eorzeaTimer.Id });
+                dataGridViewRow.Cells.Add(new DataGridViewTextBoxCell() { Value = eorzeaTimer.Name });
+                dataGridViewRow.Cells.Add(new DataGridViewTextBoxCell() { Value = eorzeaTimer.NextLocalTime });
+                dataGridViewRow.Cells.Add(new DataGridViewTextBoxCell() { Value = eorzeaTimer.NextEorzeaTime });
+                this.EorzeaTimer.Rows.Add(dataGridViewRow);
+            }
             this.EorzeaTimer.Refresh();
+        }
+
+        public void gatheringPointVIew_SetContent(Data.Model.DisplayVo.GatheringPointBase gatheringPointBase)
+        {
+            this.gatheringPointVIew.Rows.Clear();
+            this.gatheringPointVIewColumn1.HeaderText = gatheringPointBase.Description_chs;
+            DataGridViewRow dataGridViewRow0 = new DataGridViewRow();
+            dataGridViewRow0.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item0ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow0);
+            DataGridViewRow dataGridViewRow1 = new DataGridViewRow();
+            dataGridViewRow1.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item1ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow1);
+            DataGridViewRow dataGridViewRow2 = new DataGridViewRow();
+            dataGridViewRow2.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item2ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow2);
+            DataGridViewRow dataGridViewRow3 = new DataGridViewRow();
+            dataGridViewRow3.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item3ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow3);
+            DataGridViewRow dataGridViewRow4 = new DataGridViewRow();
+            dataGridViewRow4.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item4ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow4);
+            DataGridViewRow dataGridViewRow5 = new DataGridViewRow();
+            dataGridViewRow5.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item5ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow5);
+            DataGridViewRow dataGridViewRow6 = new DataGridViewRow();
+            dataGridViewRow6.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item6ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow6);
+            DataGridViewRow dataGridViewRow7 = new DataGridViewRow();
+            dataGridViewRow7.Cells.Add(new DataGridViewTextBoxCell() { Value = gatheringPointBase.GatheringPointBaseExtension.Item7ID });
+            this.gatheringPointVIew.Rows.Add(dataGridViewRow7);
+            this.gatheringPointVIew.Refresh();
         }
 
     }

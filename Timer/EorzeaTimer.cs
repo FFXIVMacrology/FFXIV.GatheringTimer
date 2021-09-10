@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace GatheringTimer.Timer
 {
-    class EorzeaTimer
+    public class EorzeaTimer
     {
 
         public int Id { get; set; }
+
+        public string Name { get; set; }
 
         public DateTime LocalTime { get; set; }
 

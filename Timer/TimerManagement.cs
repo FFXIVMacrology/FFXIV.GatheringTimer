@@ -14,50 +14,51 @@ namespace GatheringTimer.Timer
 
         public static void CreateTimer(int gatheringPointId)
         {
-
-            System.Threading.Timer timer = new System.Threading.Timer(
-                new System.Threading.TimerCallback(Callback), gatheringPointId, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-            DateTime eorzeaNow = EorzeaDateTimeExtension.ToEorzeaTime(DateTime.Now);
-            DateTime nextEorzeaTime = Service.RecentGatheringTime(gatheringPointId);
-            DateTime nextLocalTime = EorzeaDateTimeExtension.ToLocalTime(nextEorzeaTime);
-            timer.Change(nextLocalTime.Subtract(DateTime.Now), Timeout.InfiniteTimeSpan);
-            Logger.Info("LT:" + DateTime.Now + ",ET:" + eorzeaNow + ",NextLT:" + nextLocalTime + ",NextET:" + nextEorzeaTime);
-            eorzeaTimers.Add(new EorzeaTimer()
-            {
-                Id = gatheringPointId,
-                LocalTime = DateTime.Now,
-                EorzeaTime = eorzeaNow,
-                NextLocalTime = nextLocalTime,
-                NextEorzeaTime = nextEorzeaTime,
-                Timer = timer
-            });
+            AddTimer(gatheringPointId);
         }
 
         public static void Callback(object param)
         {
             int gatheringPointId = (int)param;
-            try
-            {
-                System.Threading.Timer timer = (from eorzeaTimer in eorzeaTimers
-                                                where eorzeaTimer.Id == gatheringPointId
-                                                select eorzeaTimer).ToList<EorzeaTimer>().First().Timer;
-                DateTime eorzeaNow = EorzeaDateTimeExtension.ToEorzeaTime(DateTime.Now);
-                DateTime nextEorzeaTime = Service.RecentGatheringTime((int)gatheringPointId);
-                DateTime nextLocalTime = EorzeaDateTimeExtension.ToLocalTime(nextEorzeaTime);
-                timer.Change(nextLocalTime.Subtract(DateTime.Now), Timeout.InfiniteTimeSpan);
-                Logger.Info("LT:" + DateTime.Now + ",ET:" + eorzeaNow + ",NextLT:" + nextLocalTime + ",NextET:" + nextEorzeaTime);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Timer Error,ID:" + gatheringPointId + ",Exception:" + ex.Message);
-            }
-            finally
-            {
-                GC.Collect();
-            }
+            AddTimer(gatheringPointId);
         }
 
+        private static void AddTimer(int gatheringPointId)
+        {
+            List<EorzeaTimer> eorzeaTimerSelect = (from eorzeaTimerEntity in eorzeaTimers where eorzeaTimerEntity.Id == gatheringPointId select eorzeaTimerEntity).ToList<EorzeaTimer>();
+            DateTime eorzeaNow = EorzeaDateTimeExtension.ToEorzeaTime(DateTime.Now);
+            DateTime nextEorzeaTime = Service.RecentGatheringTime(gatheringPointId);
+            DateTime nextLocalTime = EorzeaDateTimeExtension.ToLocalTime(nextEorzeaTime);
+            System.Threading.Timer timer;
+            if (eorzeaTimerSelect.Count > 0)
+            {
+                EorzeaTimer eorzeaTimer = eorzeaTimerSelect.First();
+                timer = eorzeaTimer.Timer;
+            }
+            else
+            {
+                timer = new System.Threading.Timer(
+                    new System.Threading.TimerCallback(Callback),
+                    gatheringPointId,
+                    Timeout.InfiniteTimeSpan,
+                    Timeout.InfiniteTimeSpan
+                    );
+                Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = Service.GetGatheringPointBaseDetail(gatheringPointId).Result;
+                eorzeaTimers.Add(new EorzeaTimer()
+                {
+                    Id = gatheringPointId,
+                    Name = gatheringPointBase.Description_chs,
+                    LocalTime = DateTime.Now,
+                    EorzeaTime = eorzeaNow,
+                    NextLocalTime = nextLocalTime,
+                    NextEorzeaTime = nextEorzeaTime,
+                    Timer = timer
+                });
 
+            }
+            timer.Change(nextLocalTime.Subtract(DateTime.Now), Timeout.InfiniteTimeSpan);
+            Logger.Info("LT:" + DateTime.Now + ",ET:" + eorzeaNow + ",NextLT:" + nextLocalTime + ",NextET:" + nextEorzeaTime);
+        }
 
     }
 }
