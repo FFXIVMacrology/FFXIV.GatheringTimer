@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 [assembly: AssemblyDescription("GatheringTimer")]
 [assembly: AssemblyCompany("ErinnerMO")]
 [assembly: AssemblyVersion("0.0.0.1")]
+[assembly: AssemblyFileVersion("0.0.0.1")]
 [assembly: AssemblyCopyright("Copyright © 2019-2021 ErinnerMO")]
 namespace GatheringTimer
 {
