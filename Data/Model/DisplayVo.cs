@@ -244,6 +244,16 @@ namespace GatheringTimer.Data.Model.DisplayVo
         public int? Item5ID { get; set; }
         public int? Item6ID { get; set; }
         public int? Item7ID { get; set; }
+
+        public Item Item0 { get; set; }
+        public Item Item1 { get; set; }
+        public Item Item2 { get; set; }
+        public Item Item3 { get; set; }
+        public Item Item4 { get; set; }
+        public Item Item5 { get; set; }
+        public Item Item6 { get; set; }
+        public Item Item7 { get; set; }
+
     }
 
     public class TimeConditionExtension

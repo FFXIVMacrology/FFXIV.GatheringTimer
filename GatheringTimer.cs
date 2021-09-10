@@ -34,12 +34,26 @@ namespace GatheringTimer
 
         }
 
-        public static async Task GetItemDetail(GatheringTimerForm gatheringTimerForm, int itemID)
+        public static async Task<Data.Model.DisplayVo.Item> GetItem(GatheringTimerForm gatheringTimerForm,int itemId)
         {
 
             try
             {
-                Data.Model.DisplayVo.Item item = await Service.GetItemDetail(itemID);
+                return await Service.GetItem(itemId);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Search Error!Exception:" + ex.Message);
+            }
+            return null;
+        }
+
+        public static async Task GetItemDetail(GatheringTimerForm gatheringTimerForm, int itemId)
+        {
+
+            try
+            {
+                Data.Model.DisplayVo.Item item = await Service.GetItemDetail(itemId);
                 gatheringTimerForm.DetailList_SetContent(item);
             }
             catch (Exception ex)
@@ -55,7 +69,7 @@ namespace GatheringTimer
             try
             {
                 Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = await Service.GetGatheringPointBaseDetail(gatheringPointBaseId);
-                gatheringTimerForm.gatheringPointVIew_SetContent(gatheringPointBase);
+                gatheringTimerForm.GatheringPointVIew_SetContent(gatheringPointBase);
             }
             catch (Exception ex)
             {

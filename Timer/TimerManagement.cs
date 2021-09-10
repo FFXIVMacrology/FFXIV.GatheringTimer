@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace GatheringTimer.Timer
 {
@@ -20,6 +18,7 @@ namespace GatheringTimer.Timer
         public static void Callback(object param)
         {
             int gatheringPointId = (int)param;
+
             AddTimer(gatheringPointId);
         }
 
@@ -30,6 +29,7 @@ namespace GatheringTimer.Timer
             DateTime nextEorzeaTime = Service.RecentGatheringTime(gatheringPointId);
             DateTime nextLocalTime = EorzeaDateTimeExtension.ToLocalTime(nextEorzeaTime);
             System.Threading.Timer timer;
+            Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = Service.GetGatheringPointBaseDetail(gatheringPointId).Result;
             if (eorzeaTimerSelect.Count > 0)
             {
                 EorzeaTimer eorzeaTimer = eorzeaTimerSelect.First();
@@ -43,7 +43,7 @@ namespace GatheringTimer.Timer
                     Timeout.InfiniteTimeSpan,
                     Timeout.InfiniteTimeSpan
                     );
-                Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = Service.GetGatheringPointBaseDetail(gatheringPointId).Result;
+
                 eorzeaTimers.Add(new EorzeaTimer()
                 {
                     Id = gatheringPointId,
@@ -57,8 +57,20 @@ namespace GatheringTimer.Timer
 
             }
             timer.Change(nextLocalTime.Subtract(DateTime.Now), Timeout.InfiniteTimeSpan);
+            Util.Notify.Info(gatheringPointBase.Description_chs);
             Logger.Info("LT:" + DateTime.Now + ",ET:" + eorzeaNow + ",NextLT:" + nextLocalTime + ",NextET:" + nextEorzeaTime);
         }
 
+
+        public static void Stop(int gatheringPointId) {
+            List<EorzeaTimer> eorzeaTimerSelect = (from eorzeaTimerEntity in eorzeaTimers where eorzeaTimerEntity.Id == gatheringPointId select eorzeaTimerEntity).ToList<EorzeaTimer>();
+            if (eorzeaTimerSelect.Count > 0)
+            {
+                EorzeaTimer eorzeaTimer = eorzeaTimerSelect.First();
+                System.Threading.Timer timer = eorzeaTimer.Timer;
+                timer.Dispose();
+                eorzeaTimers.Remove(eorzeaTimer);
+            }
+        }
     }
 }

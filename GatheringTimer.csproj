@@ -88,6 +88,7 @@
     <Compile Include="Timer\EorzeaTimer.cs" />
     <Compile Include="Timer\TimerManagement.cs" />
     <Compile Include="Timer\EorzeaDateTimeExtension.cs" />
+    <Compile Include="Util\Notify.cs" />
     <Compile Include="Util\RestClient.cs" />
     <Compile Include="Util\RequestUtil.cs" />
     <Compile Include="GameInfo\InfoManagement.cs" />
@@ -126,14 +127,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x64\SQLite.Interop.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x86\SQLite.Interop.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
+    <Content Include="Resource\Timer.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

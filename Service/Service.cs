@@ -64,7 +64,7 @@ namespace GatheringTimer
 
         private static bool DatabaseInitialization()
         {
-            Logger.Info("Database File initializing");
+
             String path = config["Path"];
             String filename = config["Filename"];
             if (String.IsNullOrEmpty(path) || String.IsNullOrEmpty(filename))
@@ -78,12 +78,11 @@ namespace GatheringTimer
                 if (File.Exists(dataSource))
                 {
                     sqliteDatabase.SetDataSource(dataSource);
-                    Logger.Info("Database File Already");
                     return true;
                 }
                 else
                 {
-                    Logger.Info("Database File Not Exists");
+                    Logger.Error("Database File Not Exists");
                     return false;
                 }
 
@@ -128,6 +127,15 @@ namespace GatheringTimer
                 }
 
             }
+        }
+
+        public static async Task<Data.Model.DisplayVo.Item> GetItem(int itemId)
+        {
+            await LoadSource(false);
+            Item item = (from itemEntity in itemCache
+                         where itemEntity.ID == itemId
+                         select itemEntity).ToList<Item>().First();
+            return ConvertTo<Data.Model.DisplayVo.Item, Item>(item);
         }
 
         public static async Task<List<Data.Model.DisplayVo.Item>> GetItems(String searchStr)
@@ -316,7 +324,7 @@ namespace GatheringTimer
                         }
                     }
                 }
-                Logger.Info(JsonConvert.SerializeObject(item));
+                Logger.Debug(JsonConvert.SerializeObject(item));
                 return item;
 
             }
@@ -342,6 +350,16 @@ namespace GatheringTimer
                 if (exEntities.Count > 0)
                 {
                     gatheringPointBase.GatheringPointBaseExtension = ConvertTo<Data.Model.DisplayVo.GatheringPointBaseExtension, GatheringPointBaseExtension>(exEntities).First();
+                    for (int i = 0; i < 8; i++)
+                    {
+
+                        int itemEntityId = int.Parse(gatheringPointBase.GatheringPointBaseExtension.GetType().GetProperty("Item" + i + "ID").GetValue(gatheringPointBase.GatheringPointBaseExtension).ToString());
+                        if (itemEntityId != 0)
+                        {
+                            Data.Model.DisplayVo.Item itemEntity = await GetItem(itemEntityId);
+                            gatheringPointBase.GatheringPointBaseExtension.GetType().GetProperty("Item" + i).SetValue(gatheringPointBase.GatheringPointBaseExtension, itemEntity);
+                        }
+                    }
                 }
                 List<TimeConditionExtension> timeEntities =
                    (from timeConditionExtension in timeConditionExtensionCache
