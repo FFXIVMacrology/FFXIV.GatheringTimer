@@ -115,7 +115,7 @@ namespace GatheringTimer.Data.ThirdParty
                     {
                         File.Delete(dataSource);
                     }
-                    File.Move(cacheFilename, dataSource);
+                    File.Move(cacheSource, dataSource);
                     Logger.Info("Data File Already");
                     return true;
                 }
