@@ -13,7 +13,7 @@ namespace GatheringTimer.Util
         public static void Info(string str)
         {
             NotifyIcon notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = new Icon("./Resource/Timer.ico");
+            notifyIcon.Icon = new Icon("./Resources/Timer.ico");
             notifyIcon.Visible = true;
             notifyIcon.ShowBalloonTip(1000, "GatheringTimer", str, ToolTipIcon.Info);
         }

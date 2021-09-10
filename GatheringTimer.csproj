@@ -45,24 +45,6 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -72,9 +54,9 @@
   </Target>
   -->
   <ItemGroup>
-    <Reference Include="Advanced Combat Tracker">
+    <Reference Include="Advanced Combat Tracker, Version=3.5.0.273, Culture=neutral, PublicKeyToken=a946b61e93d97868, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Advanced Combat Tracker.exe</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -115,7 +97,7 @@
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
       <Version>5.6.0</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <!--<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="HtmlAgilityPack">
@@ -132,6 +114,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\Debug\ACT-Portable.bat" />
+    <None Include="bin\Debug\ACTx86.exe.config" />
+    <None Include="bin\Debug\Advanced Combat Tracker.exe.config" />
     <None Include="LICENSE" />
     <None Include="README.md" />
   </ItemGroup>
@@ -144,8 +129,16 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Costura32\SQLite.Interop.dll" />
-    <Content Include="Costura64\SQLite.Interop.dll" />
+    <Content Include="bin\Debug\ACT Clipboard Sharer.exe" />
+    <Content Include="bin\Debug\ACTx86.exe" />
+    <Content Include="bin\Debug\Advanced Combat Tracker.exe" />
+    <Content Include="bin\Debug\GammaJul.LgLcd.dll" />
+    <Content Include="bin\Debug\GammaJul.LgLcd.Native32.dll" />
+    <Content Include="bin\Debug\GammaJul.LgLcd.Native64.dll" />
+    <Content Include="bin\Debug\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="bin\Debug\Trinet.Core.IO.Ntfs.dll" />
+    <EmbeddedResource Include="Costura32\SQLite.Interop.dll" />
+    <EmbeddedResource Include="Costura64\SQLite.Interop.dll" />
     <Content Include="FodyWeavers.xml" />
     <Content Include="Resources\Timer.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
