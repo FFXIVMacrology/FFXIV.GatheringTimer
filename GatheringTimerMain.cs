@@ -8,16 +8,7 @@ using System.Threading.Tasks;
 namespace GatheringTimer
 {
 
-    interface IGatheringTimerSource
-    {
-
-        Task<bool> ClearCache();
-
-        Task<bool> SyncDataToDatabase();
-
-    }
-
-    public class GatheringTimer
+    public class GatheringTimerMain
     {
         public static async Task GetItems(GatheringTimerForm gatheringTimerForm, String searchStr)
         {

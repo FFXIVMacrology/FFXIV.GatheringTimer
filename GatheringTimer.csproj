@@ -45,6 +45,10 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -66,12 +70,17 @@
   <ItemGroup>
     <Compile Include="Constant\Language.cs" />
     <Compile Include="Data\Model\DisplayVo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Service\Service.cs" />
     <Compile Include="Data\ThirdParty\CafeMaker\CafeMakerUpdater.cs" />
     <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiUpdater.cs" />
     <Compile Include="Data\ThirdParty\XIVApi\XIVApiUpdater.cs" />
     <Compile Include="Data\ThirdParty\Updater.cs" />
-    <Compile Include="GatheringTimer.cs" />
+    <Compile Include="GatheringTimerMain.cs" />
     <Compile Include="Data\Database\DataToModel.cs" />
     <Compile Include="Data\Database\SQLiteDatabase.cs" />
     <Compile Include="Data\DataConfig.cs" />
@@ -137,11 +146,13 @@
     <Content Include="bin\Debug\GammaJul.LgLcd.Native64.dll" />
     <Content Include="bin\Debug\ICSharpCode.SharpZipLib.dll" />
     <Content Include="bin\Debug\Trinet.Core.IO.Ntfs.dll" />
+    <Content Include="Resources\Timer.ico" />
     <EmbeddedResource Include="Costura32\SQLite.Interop.dll" />
     <EmbeddedResource Include="Costura64\SQLite.Interop.dll" />
     <Content Include="FodyWeavers.xml" />
-    <Content Include="Resources\Timer.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

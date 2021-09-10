@@ -246,6 +246,11 @@ namespace GatheringTimer.Data.Database
         {
             try
             {
+                if (!Directory.Exists(this.dataSource.Substring(0, this.dataSource.LastIndexOf("/"))))
+                {
+                    Directory.CreateDirectory(this.dataSource.Substring(0, this.dataSource.LastIndexOf("/")));
+                }
+
                 if (!File.Exists(this.dataSource))
                 {
                     SQLiteConnection.CreateFile(dataSource);

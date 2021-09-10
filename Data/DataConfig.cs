@@ -19,7 +19,7 @@ namespace GatheringTimer.Data
         {
             try
             {
-                dic.Add("Path", "./");
+                dic.Add("Path", "./Plugins/FFXIV.GatheringTimer/");
                 dic.Add("Filename", "GatheringTimer.db");
                 dic.Add("CacheFilename", "GatheringTimerCache.db");
             }

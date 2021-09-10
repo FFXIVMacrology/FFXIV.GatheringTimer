@@ -11,25 +11,6 @@ using GatheringTimer.Data.Model.Entity;
 
 namespace GatheringTimer.Data
 {
-    interface IDataManagement
-    {
-        bool DataInitialization();
-
-        bool DataUpdate();
-
-        bool CreateFavouriteItem(long itemId);
-
-        List<long> ReadFavouriteItem();
-
-        bool DeleteFavouriteItem(long itemId);
-
-        bool CreateFavouritePlace(long placeId);
-         
-        List<long> ReadFavouritePlace();
-
-        bool DeleteFavouritePlace(long placeId);
-
-    }
 
     public static class DataManagement
     {
@@ -38,4 +19,5 @@ namespace GatheringTimer.Data
             return await ThirdParty.Updater.SyncRaw();
         }
     }
+
 }

@@ -352,8 +352,8 @@ namespace GatheringTimer
                     gatheringPointBase.GatheringPointBaseExtension = ConvertTo<Data.Model.DisplayVo.GatheringPointBaseExtension, GatheringPointBaseExtension>(exEntities).First();
                     for (int i = 0; i < 8; i++)
                     {
-
-                        int itemEntityId = int.Parse(gatheringPointBase.GatheringPointBaseExtension.GetType().GetProperty("Item" + i + "ID").GetValue(gatheringPointBase.GatheringPointBaseExtension).ToString());
+                        var obj = gatheringPointBase.GatheringPointBaseExtension.GetType().GetProperty("Item" + i + "ID").GetValue(gatheringPointBase.GatheringPointBaseExtension);
+                        int itemEntityId = int.Parse(obj == null ? "0" : obj.ToString());
                         if (itemEntityId != 0)
                         {
                             Data.Model.DisplayVo.Item itemEntity = await GetItem(itemEntityId);

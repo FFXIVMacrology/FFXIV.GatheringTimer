@@ -12,10 +12,13 @@ using System.Xml;
 using GatheringTimer.Data;
 using System.Threading.Tasks;
 
+
+[assembly: AssemblyProduct("GatheringTimer")]
 [assembly: AssemblyTitle("GatheringTimer")]
 [assembly: AssemblyDescription("GatheringTimer")]
 [assembly: AssemblyCompany("ErinnerMO")]
 [assembly: AssemblyVersion("0.0.0.1")]
+[assembly: AssemblyCopyright("Copyright © 2019-2021 ErinnerMO")]
 namespace GatheringTimer
 {
     public class GatheringTimerForm : UserControl, IActPluginV1
@@ -411,7 +414,7 @@ namespace GatheringTimer
             }
             else
             {
-                await GatheringTimer.GetItems(this, searchBox.Text);
+                await GatheringTimerMain.GetItems(this, searchBox.Text);
             }
 
         }
@@ -436,7 +439,7 @@ namespace GatheringTimer
             if (index != System.Windows.Forms.ListBox.NoMatches)
             {
                 int itemID = int.Parse(this.itemList.Items[index].GetType().GetProperty("ID").GetValue(this.itemList.Items[index]).ToString());
-                await GatheringTimer.GetItemDetail(this, itemID);
+                await GatheringTimerMain.GetItemDetail(this, itemID);
             }
         }
 
@@ -487,9 +490,9 @@ namespace GatheringTimer
                 Data.Model.DisplayVo.GatheringPointBase gatheringPointBase = await Service.GetGatheringPointBaseDetail(gatheringPointBaseID);
                 if (gatheringPointBase != null && gatheringPointBase.TimeConditionExtension != null)
                 {
-                    await GatheringTimer.CreateTimer(this, gatheringPointBaseID);
+                    await GatheringTimerMain.CreateTimer(this, gatheringPointBaseID);
                 }
-                await GatheringTimer.GetGatheringPointBaseDetail(this, gatheringPointBaseID);
+                await GatheringTimerMain.GetGatheringPointBaseDetail(this, gatheringPointBaseID);
             }
         }
 
@@ -511,7 +514,7 @@ namespace GatheringTimer
         private async void EorzeaTimer_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             object gatheringPointBaseID = this.eorzeaTimer.CurrentRow.Cells[0].Value;
-            await GatheringTimer.GetGatheringPointBaseDetail(this, (int)gatheringPointBaseID);
+            await GatheringTimerMain.GetGatheringPointBaseDetail(this, (int)gatheringPointBaseID);
         }
 
         private async void EorzeaTimer_DeleteClick(object sender, EventArgs e)
