@@ -61,7 +61,6 @@ namespace GatheringTimer.Timer
             Logger.Info("LT:" + DateTime.Now + ",ET:" + eorzeaNow + ",NextLT:" + nextLocalTime + ",NextET:" + nextEorzeaTime);
         }
 
-
         public static void Stop(int gatheringPointId) {
             List<EorzeaTimer> eorzeaTimerSelect = (from eorzeaTimerEntity in eorzeaTimers where eorzeaTimerEntity.Id == gatheringPointId select eorzeaTimerEntity).ToList<EorzeaTimer>();
             if (eorzeaTimerSelect.Count > 0)

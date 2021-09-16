@@ -135,6 +135,7 @@ namespace GatheringTimer
             Item item = (from itemEntity in itemCache
                          where itemEntity.ID == itemId
                          select itemEntity).ToList<Item>().First();
+            Logger.Debug(JsonConvert.SerializeObject(item));
             return ConvertTo<Data.Model.DisplayVo.Item, Item>(item);
         }
 
@@ -153,6 +154,7 @@ namespace GatheringTimer
                                 || item.Name_ja.Contains(searchStr)
                                 || item.Name_chs.Contains(searchStr)
                                 select item).Take(10).ToList<Item>();
+            Logger.Debug(JsonConvert.SerializeObject(items));
             return ConvertTo<Data.Model.DisplayVo.Item, Item>(items);
         }
 
@@ -461,9 +463,10 @@ namespace GatheringTimer
                         }
                     }
                 }
-
+                Logger.Debug(JsonConvert.SerializeObject(gatheringPointBases));
                 return gatheringPointBase;
             }
+
             return null;
         }
 

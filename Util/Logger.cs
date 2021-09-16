@@ -1,117 +1,143 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reflection;
+﻿using log4net.Appender;
+using log4net.Core;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GatheringTimer
 {
     public class Logger
     {
-        private static LogType LOG_LEVEL = LogType.Info;
+        public static TextBox textBoxLogger;
 
-        private static TextBox TEXT_BOX;
+        private static System.Threading.Timer timer;
 
-        public static void SetTextBox(TextBox textBox)
+        public static void InitTimer()
         {
-            TEXT_BOX = textBox;
+            timer = new System.Threading.Timer(
+                    new System.Threading.TimerCallback(ReadLogFile),
+                    null,
+                    0,
+                    1000
+                    );
         }
 
-        public enum LogType
-        {
-            Error, Warning, Info, Debug
+        private static void ReadLogFile(object param) {
+            string oldValue = string.Empty, newValue = string.Empty;
+            string path = "./Plugins/FFXIV.GatheringTimer/Log/" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+            //if (File.Exists(path)) {
+            //    using (StreamReader read = new StreamReader(path, true))
+            //    {
+            //        do
+            //        {
+            //            newValue = read.ReadLine();
+            //            oldValue = newValue != null ? newValue : oldValue;
+            //        } while (newValue != null);
+            //    }
+            //    if (textBoxLogger != null)
+            //    {
+            //        textBoxLogger.AppendText(oldValue);
+            //        textBoxLogger.AppendText(Environment.NewLine);
+            //        textBoxLogger.Refresh();
+            //    }
+
+            //}
 
         }
 
-        private static string InitLogStr(LogType logType, string str, Exception ex)
+
+        public static void Error(object msg)
         {
-            StackTrace st = new StackTrace();
-            string namespaceName = st.GetFrame(2).GetMethod().ReflectedType.Namespace;
-            string className = st.GetFrame(2).GetMethod().ReflectedType.Name;
-            string methodName = st.GetFrame(2).GetMethod().Name;
-            switch (logType)
+            log4net.ILog log = log4net.LogManager.GetLogger("logerror");
+            Task.Run(() => {
+                log.Error(msg);
+            }); 
+        }
+
+        public static void Error(object msg, Exception ex)
+        {
+            log4net.ILog log = log4net.LogManager.GetLogger("logerror");
+            if (ex != null)
             {
-                case LogType.Debug:
-                    return DateTime.Now.ToString() + "-[Debug][" + namespaceName + "][" + className + "][" + methodName + "]:" + str + (ex is null ?"" : "\r\nException:" + ex.Message);
-                case LogType.Info:
-                    return DateTime.Now.ToString() + "-[Info][" + namespaceName + "][" + className + "][" + methodName + "]:" + str + (ex is null ? "" : "\r\nException:" + ex.Message);
-                case LogType.Warning:
-                    return DateTime.Now.ToString() + "-[Warning][" + namespaceName + "][" + className + "][" + methodName + "]:" + str + (ex is null ? "" : "\r\nException:" + ex.Message);
-                case LogType.Error:
-                    return DateTime.Now.ToString() + "-[Error][" + namespaceName + "][" + className + "][" + methodName + "]:" + str + (ex is null ? "" : "\r\nException:" + ex.Message);
-                default: return "";
+                Task.Run(() => {
+                    log.Error(msg, ex);
+                });
             }
-
-        }
-
-        public static void Error(string str, Exception exception)
-        {
-            string log = InitLogStr(LogType.Error, str, exception);
-            Console.WriteLine(log);
-            TextBoxShowLog(log);
-        }
-
-        public static void Warning(string str, Exception exception)
-        {
-            string log = InitLogStr(LogType.Warning, str, exception);
-            if (LOG_LEVEL != LogType.Error)
+            else
             {
-                Console.WriteLine(log);
-                TextBoxShowLog(log);
-            }
-        }
-
-        public static void Info(string str, Exception exception)
-        {
-            string log = InitLogStr(LogType.Info, str, exception);
-            if (LOG_LEVEL != LogType.Error && LOG_LEVEL != LogType.Warning)
-            {
-                Console.WriteLine(log);
-                TextBoxShowLog(log);
-            }
-        }
-
-        public static void Debug(string str, Exception exception)
-        {
-            string log = InitLogStr(LogType.Debug, str, exception);
-            if (LOG_LEVEL != LogType.Error && LOG_LEVEL != LogType.Warning && LOG_LEVEL != LogType.Info)
-            {
-                Console.WriteLine(log);
-                TextBoxShowLog(log);
+                Task.Run(() => {
+                    log.Error(msg);
+                });
             }
         }
 
-        public static void Error(string str)
+        public static void Warn(object msg)
         {
-            Error(str, null);
+            log4net.ILog log = log4net.LogManager.GetLogger("logwarn");
+            Task.Run(() => {
+                log.Warn(msg);
+            });
         }
 
-        public static void Info(string str)
+        public static void Warn(object msg, Exception ex)
         {
-            Info(str, null);
-        }
-
-        public static void Warning(string str)
-        {
-            Warning(str, null);
-        }
-
-        public static void Debug(string str)
-        {
-            Debug(str, null);
-        }
-
-        public static void TextBoxShowLog(string Info)
-        {
-            if (null != TEXT_BOX)
+            log4net.ILog log = log4net.LogManager.GetLogger("logwarn");
+            if (ex != null)
             {
-
-                TEXT_BOX.AppendText(Info);
-                TEXT_BOX.AppendText(Environment.NewLine);
-                TEXT_BOX.ScrollToCaret();
-
+                Task.Run(() => {
+                    log.Warn(msg, ex);
+                });
             }
-
+            else
+            {
+                Task.Run(() => {
+                    log.Warn(msg);
+                });
+            }
         }
 
+        public static void Info(object msg)
+        {
+            log4net.ILog log = log4net.LogManager.GetLogger("loginfo");
+            Task.Run(() => {
+                log.Info(msg);
+            });
+        }
+
+        public static void Debug(object msg)
+        {
+            log4net.ILog log = log4net.LogManager.GetLogger("logdebug");
+            Task.Run(() => {
+                log.Debug(msg);
+            });
+        }
+
+        public static void Debug(Exception ex)
+        {
+            log4net.ILog log = log4net.LogManager.GetLogger("logdebug");
+            Task.Run(() => {
+                log.Debug(ex.Message.ToString() + "/r/n" + ex.Source.ToString() + "/r/n" + ex.TargetSite.ToString() + "/r/n" + ex.StackTrace.ToString());
+            });
+        }
+
+        public static void Debug(object msg, Exception ex)
+        {
+            log4net.ILog log = log4net.LogManager.GetLogger("logdebug");
+            if (ex != null)
+            {
+                Task.Run(() => {
+                    log.Debug(msg, ex);
+                });
+            }
+            else
+            {
+                Task.Run(() => {
+                    log.Debug(msg);
+                });
+            }
+        }
     }
+
 }

@@ -667,6 +667,7 @@ namespace GatheringTimer.Data.Database
                 {
                     try
                     {
+                        Logger.Debug("\n"+sql);
                         sqliteCommand.Connection = connection;
                         sqliteCommand.CommandText = sql;
                         sqliteCommand.CommandTimeout = 120;

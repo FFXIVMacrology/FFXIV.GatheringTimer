@@ -209,7 +209,7 @@ namespace GatheringTimer.Util
                     HttpWebResponse response = (HttpWebResponse)ex.Response;
                     if (!(response is null) && response.StatusCode != HttpStatusCode.NotFound)
                     {
-                        Logger.Warning(":\nCan not GetResponse-'" + EndPoint + parameters + "'", ex);
+                        Logger.Warn(":\nCan not GetResponse-'" + EndPoint + parameters + "'", ex);
                     }  
                 }
             });

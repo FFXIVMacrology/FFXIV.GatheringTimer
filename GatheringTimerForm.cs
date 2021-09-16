@@ -11,7 +11,8 @@ using System.Reflection;
 using System.Xml;
 using GatheringTimer.Data;
 using System.Threading.Tasks;
-
+using log4net.Core;
+using System.Threading;
 
 [assembly: AssemblyProduct("GatheringTimer")]
 [assembly: AssemblyTitle("GatheringTimer")]
@@ -20,10 +21,12 @@ using System.Threading.Tasks;
 [assembly: AssemblyVersion("0.0.0.1")]
 [assembly: AssemblyFileVersion("0.0.0.1")]
 [assembly: AssemblyCopyright("Copyright © 2019-2021 ErinnerMO")]
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
 namespace GatheringTimer
 {
     public class GatheringTimerForm : UserControl, IActPluginV1
     {
+
         private IContainer components;
         #region Designer Created Code (Avoid editing)
 
@@ -290,6 +293,7 @@ namespace GatheringTimer
         public GatheringTimerForm()
         {
             InitializeComponent();
+            log4net.Config.XmlConfigurator.Configure(new MemoryStream(Properties.Resources.log4net));
         }
 
         Label lblStatus;    // The status label that appears in ACT's Plugin tab
@@ -377,7 +381,8 @@ namespace GatheringTimer
 
         private void GatheringTimerForm_Load(object sender, EventArgs e)
         {
-            Logger.SetTextBox(this.textBoxLogger);
+            Logger.textBoxLogger = this.textBoxLogger;
+            Logger.InitTimer();
         }
 
         private bool syncDataStatus = true;

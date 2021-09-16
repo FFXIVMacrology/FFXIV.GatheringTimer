@@ -28,7 +28,7 @@ namespace GatheringTimer.Util
             }
             catch (Exception e)
             {
-                Logger.Warning("No response", e);
+                Logger.Warn("No response", e);
             }
             return html;
         }

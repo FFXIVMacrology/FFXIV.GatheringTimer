@@ -92,6 +92,7 @@
     <Compile Include="Timer\EorzeaTimer.cs" />
     <Compile Include="Timer\TimerManagement.cs" />
     <Compile Include="Timer\EorzeaDateTimeExtension.cs" />
+    <Compile Include="Util\Logger.cs" />
     <Compile Include="Util\Notify.cs" />
     <Compile Include="Util\RestClient.cs" />
     <Compile Include="Util\RequestUtil.cs" />
@@ -100,17 +101,19 @@
     <Compile Include="GatheringTimerForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Util\Logger.cs" />
     <Compile Include="GameInfo\Memory.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
       <Version>5.6.0</Version>
-      <!--<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.36</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.12</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
@@ -146,13 +149,16 @@
     <Content Include="bin\Debug\GammaJul.LgLcd.Native64.dll" />
     <Content Include="bin\Debug\ICSharpCode.SharpZipLib.dll" />
     <Content Include="bin\Debug\Trinet.Core.IO.Ntfs.dll" />
-    <Content Include="Resources\Timer.ico" />
+    <None Include="Resources\Config\log4net.config" />
     <EmbeddedResource Include="Costura32\SQLite.Interop.dll" />
+    <Content Include="Resources\Timer.ico" />
     <EmbeddedResource Include="Costura64\SQLite.Interop.dll" />
     <Content Include="FodyWeavers.xml" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
 </Project>

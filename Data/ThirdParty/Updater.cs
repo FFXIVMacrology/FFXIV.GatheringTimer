@@ -289,7 +289,7 @@ namespace GatheringTimer.Data.ThirdParty
 
             if (!chsUpdate.Result)
             {
-                Logger.Warning("CHS Data Sync Fail!");
+                Logger.Warn("CHS Data Sync Fail!");
             }
             else
             {
@@ -298,7 +298,7 @@ namespace GatheringTimer.Data.ThirdParty
 
             if (!hjwUpdate.Result)
             {
-                Logger.Warning("Extension Data Sync Fail!");
+                Logger.Warn("Extension Data Sync Fail!");
             }
             else
             {
