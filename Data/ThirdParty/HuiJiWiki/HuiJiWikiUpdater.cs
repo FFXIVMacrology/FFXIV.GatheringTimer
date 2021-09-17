@@ -79,7 +79,7 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
                             int ID = 0;
                             if (hasID)
                             {
-                                ID = int.Parse(gatheringList[gatheringProperty.Name]["ID"].ToString()) - 1;
+                                ID = int.Parse(gatheringList[gatheringProperty.Name]["ID"].ToString());
                             }
                             entity.GetType().GetProperty("Item" + index + "ID").SetValue(entity, ID);
                         }
