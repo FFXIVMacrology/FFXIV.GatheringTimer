@@ -8,15 +8,28 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using GatheringTimer.Data.Model.Entity;
+using System.Threading;
 
 namespace GatheringTimer.Data
 {
 
     public static class DataManagement
     {
+        private static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         public static async Task<bool> Sync()
         {
-            return await ThirdParty.Updater.SyncRaw();
+            if (cancellationTokenSource.IsCancellationRequested)
+            {
+                cancellationTokenSource = new CancellationTokenSource();
+                GC.Collect();
+            }
+            return await ThirdParty.Updater.SyncRaw(cancellationTokenSource.Token);
+        }
+
+        public static void SyncCancel()
+        {
+            cancellationTokenSource.Cancel();
         }
     }
 

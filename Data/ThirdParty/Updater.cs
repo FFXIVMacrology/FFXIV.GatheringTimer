@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Data.Model.Entity;
@@ -33,14 +34,14 @@ namespace GatheringTimer.Data.ThirdParty
             return sqliteDatabase;
         }
 
-        private static async Task<bool> CreateTable<T>()
+        private static async Task<bool> CreateTable<T>(CancellationToken cancellationToken)
         {
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
             Logger.Info("Init Database Table " + typeof(T).Name + " Start");
-            bool delete = await sqliteDatabase.DeleteTable<T>();
-            bool create = await sqliteDatabase.CreateTable<T>();
+            bool delete = await sqliteDatabase.DeleteTable<T>(cancellationToken);
+            bool create = await sqliteDatabase.CreateTable<T>(cancellationToken);
             Logger.Info("Inited Database Table " + typeof(T).Name + " in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
             return true;
 
@@ -49,7 +50,7 @@ namespace GatheringTimer.Data.ThirdParty
         /// <summary>
         /// Initialize DataBase
         /// </summary>
-        public static async Task<bool> CacheInitialization()
+        public static async Task<bool> CacheInitialization(CancellationToken cancellationToken)
         {
             Logger.Info("Cache File Initializing");
             String path = config["Path"];
@@ -67,19 +68,19 @@ namespace GatheringTimer.Data.ThirdParty
                 sqliteDatabase.CreateDatabase();
                 Logger.Info("Cache File Already");
                 Queue<Task> tasks = new Queue<Task>();
-                tasks.Enqueue(CreateTable<Item>());
-                tasks.Enqueue(CreateTable<GatheringItem>());
-                tasks.Enqueue(CreateTable<SpearfishingItem>());
-                tasks.Enqueue(CreateTable<GatheringPointBase>());
-                tasks.Enqueue(CreateTable<GatheringPoint>());
-                tasks.Enqueue(CreateTable<Map>());
-                tasks.Enqueue(CreateTable<PlaceName>());
-                tasks.Enqueue(CreateTable<TerritoryType>());
-                tasks.Enqueue(CreateTable<GatheringPointBaseExtension>());
-                tasks.Enqueue(CreateTable<TimeConditionExtension>());
-                tasks.Enqueue(CreateTable<FavouriteItem>());
-                tasks.Enqueue(CreateTable<FavouritePoint>());
-                tasks.Enqueue(CreateTable<TimerEnable>());
+                tasks.Enqueue(CreateTable<Item>(cancellationToken));
+                tasks.Enqueue(CreateTable<GatheringItem>(cancellationToken));
+                tasks.Enqueue(CreateTable<SpearfishingItem>(cancellationToken));
+                tasks.Enqueue(CreateTable<GatheringPointBase>(cancellationToken));
+                tasks.Enqueue(CreateTable<GatheringPoint>(cancellationToken));
+                tasks.Enqueue(CreateTable<Map>(cancellationToken));
+                tasks.Enqueue(CreateTable<PlaceName>(cancellationToken));
+                tasks.Enqueue(CreateTable<TerritoryType>(cancellationToken));
+                tasks.Enqueue(CreateTable<GatheringPointBaseExtension>(cancellationToken));
+                tasks.Enqueue(CreateTable<TimeConditionExtension>(cancellationToken));
+                tasks.Enqueue(CreateTable<FavouriteItem>(cancellationToken));
+                tasks.Enqueue(CreateTable<FavouritePoint>(cancellationToken));
+                tasks.Enqueue(CreateTable<TimerEnable>(cancellationToken));
                 await Task.WhenAll(tasks);
                 return true;
             }
@@ -177,32 +178,32 @@ namespace GatheringTimer.Data.ThirdParty
             GC.Collect();
         }
 
-        private static async Task<bool> Sync<T, Q>(Type updater)
+        private static async Task<bool> Sync<T, Q>(Type updater, CancellationToken cancellationToken)
         {
             List<Q> cacheEntities = (List<Q>)updater.GetProperty(typeof(T).Name + "Cache").GetValue(typeof(T));
             List<T> entities = ConvertTo<T, Q>(cacheEntities);
             IntoCache<T>(entities);
-            await sqliteDatabase.InsertRowByRow<T>(entities);
+            await sqliteDatabase.InsertRowByRow<T>(entities,cancellationToken);
             return true;
 
         }
 
-        private static async Task<bool> SyncSource()
+        private static async Task<bool> SyncSource(CancellationToken cancellationToken)
         {
-            await Sync<Item, XIVApi.Item>(typeof(XIVApi.XIVApiUpdater));
-            await Sync<GatheringItem, XIVApi.GatheringItem>(typeof(XIVApi.XIVApiUpdater));
-            await Sync<SpearfishingItem, XIVApi.SpearfishingItem>(typeof(XIVApi.XIVApiUpdater));
-            await Sync<GatheringPointBase, XIVApi.GatheringPointBase>(typeof(XIVApi.XIVApiUpdater));
-            await Sync<GatheringPoint, XIVApi.GatheringPoint>(typeof(XIVApi.XIVApiUpdater));
-            await Sync<PlaceName, XIVApi.PlaceName>(typeof(XIVApi.XIVApiUpdater));
-            await Sync<TerritoryType, XIVApi.TerritoryType>(typeof(XIVApi.XIVApiUpdater));
-            await Sync<Map, XIVApi.Map>(typeof(XIVApi.XIVApiUpdater));
+            await Sync<Item, XIVApi.Item>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
+            await Sync<GatheringItem, XIVApi.GatheringItem>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
+            await Sync<SpearfishingItem, XIVApi.SpearfishingItem>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
+            await Sync<GatheringPointBase, XIVApi.GatheringPointBase>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
+            await Sync<GatheringPoint, XIVApi.GatheringPoint>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
+            await Sync<PlaceName, XIVApi.PlaceName>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
+            await Sync<TerritoryType, XIVApi.TerritoryType>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
+            await Sync<Map, XIVApi.Map>(typeof(XIVApi.XIVApiUpdater), cancellationToken);
             XIVApi.XIVApiUpdater.ClearCache();
             Logger.Info("Sync Raw Finish!");
             return true;
         }
 
-        private static async Task<bool> SyncRawCHS()
+        private static async Task<bool> SyncRawCHS(CancellationToken cancellationToken)
         {
             await Task.Run(() =>
             {
@@ -219,7 +220,7 @@ namespace GatheringTimer.Data.ThirdParty
                     }
                 }
             });
-            await sqliteDatabase.UpdateRowByRow<Item>(ItemCache, new List<string> { "Name_chs" }, new List<string> { "ID" });
+            await sqliteDatabase.UpdateRowByRow<Item>(ItemCache, new List<string> { "Name_chs" }, new List<string> { "ID" },cancellationToken);
             await Task.Run(() =>
             {
                 foreach (SpearfishingItem spearfishingItem in SpearfishingItemCache)
@@ -235,7 +236,7 @@ namespace GatheringTimer.Data.ThirdParty
                     }
                 }
             });
-            await sqliteDatabase.UpdateRowByRow<SpearfishingItem>(SpearfishingItemCache, new List<string> { "Description_chs" }, new List<string> { "ID" });
+            await sqliteDatabase.UpdateRowByRow<SpearfishingItem>(SpearfishingItemCache, new List<string> { "Description_chs" }, new List<string> { "ID" },cancellationToken);
             await Task.Run(() =>
             {
                 foreach (PlaceName placeName in PlaceNameCache)
@@ -251,30 +252,30 @@ namespace GatheringTimer.Data.ThirdParty
                     }
                 }
             });
-            await sqliteDatabase.UpdateRowByRow<PlaceName>(PlaceNameCache, new List<string> { "Name_chs" }, new List<string> { "ID" });
+            await sqliteDatabase.UpdateRowByRow<PlaceName>(PlaceNameCache, new List<string> { "Name_chs" }, new List<string> { "ID" },cancellationToken);
             Logger.Info("Sync CHS Finish!");
             CafeMaker.CafeMakerUpdater.ClearCache();
             return true;
 
         }
 
-        private static async Task<bool> SyncExtension()
+        private static async Task<bool> SyncExtension(CancellationToken cancellationToken)
         {
-            await Sync<GatheringPointBaseExtension, HuiJiWiki.GatheringPointBaseExtension>(typeof(HuiJiWiki.HuiJiWikiUpdater));
-            await Sync<TimeConditionExtension, HuiJiWiki.TimeConditionExtension>(typeof(HuiJiWiki.HuiJiWikiUpdater));
+            await Sync<GatheringPointBaseExtension, HuiJiWiki.GatheringPointBaseExtension>(typeof(HuiJiWiki.HuiJiWikiUpdater),cancellationToken);
+            await Sync<TimeConditionExtension, HuiJiWiki.TimeConditionExtension>(typeof(HuiJiWiki.HuiJiWikiUpdater),cancellationToken);
             HuiJiWiki.HuiJiWikiUpdater.ClearCache();
             Logger.Info("Sync GatheringPointBaseExtension Finish!");
             return true;
         }
 
-        public static async Task<bool> SyncRaw()
+        public static async Task<bool> SyncRaw(CancellationToken cancellationToken)
         {
 
-            await CacheInitialization();
+            await CacheInitialization(cancellationToken);
 
-            Task<bool> rawUpdate = XIVApi.XIVApiUpdater.XIVApiDataUpdate();
-            Task<bool> chsUpdate = CafeMaker.CafeMakerUpdater.CafeMakerDataUpdate();
-            Task<bool> hjwUpdate = HuiJiWiki.HuiJiWikiUpdater.HuiJiWikiDataUpdate();
+            Task<bool> rawUpdate = XIVApi.XIVApiUpdater.XIVApiDataUpdate(cancellationToken);
+            Task<bool> chsUpdate = CafeMaker.CafeMakerUpdater.CafeMakerDataUpdate(cancellationToken);
+            Task<bool> hjwUpdate = HuiJiWiki.HuiJiWikiUpdater.HuiJiWikiDataUpdate(cancellationToken);
             await Task.WhenAll(rawUpdate, chsUpdate, hjwUpdate);
             if (!rawUpdate.Result)
             {
@@ -284,7 +285,7 @@ namespace GatheringTimer.Data.ThirdParty
             else
             {
 
-                await SyncSource();
+                await SyncSource(cancellationToken);
             }
 
             if (!chsUpdate.Result)
@@ -293,7 +294,7 @@ namespace GatheringTimer.Data.ThirdParty
             }
             else
             {
-                await SyncRawCHS();
+                await SyncRawCHS(cancellationToken);
             }
 
             if (!hjwUpdate.Result)
@@ -302,7 +303,7 @@ namespace GatheringTimer.Data.ThirdParty
             }
             else
             {
-                await SyncExtension();
+                await SyncExtension(cancellationToken);
             }
 
             if (CacheToData())

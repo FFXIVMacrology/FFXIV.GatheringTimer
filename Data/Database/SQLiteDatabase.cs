@@ -344,7 +344,7 @@ namespace GatheringTimer.Data.Database
         /// <typeparam name="T"></typeparam>
         /// <param name="dataSource"></param>
         /// <returns></returns>
-        public async Task<bool> CreateTable<T>()
+        public async Task<bool> CreateTable<T>(CancellationToken cancellationToken)
         {
             Type type = typeof(T);
             //Get TableName
@@ -368,7 +368,7 @@ namespace GatheringTimer.Data.Database
             List<String> sqlList = new List<String>();
             String sql = "CREATE TABLE IF NOT EXISTS " + tableName + "(" + columns + ")";
             sqlList.Add(sql);
-            return await Task.Run(() => ExecuteSQL(sqlList));
+            return await Task.Run(() => ExecuteSQL(sqlList), cancellationToken);
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace GatheringTimer.Data.Database
         /// <typeparam name="T"></typeparam>
         /// <param name="dataSource"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteTable<T>()
+        public async Task<bool> DeleteTable<T>(CancellationToken cancellationToken)
         {
             Type type = typeof(T);
             //Get TableName
@@ -385,7 +385,7 @@ namespace GatheringTimer.Data.Database
             List<String> sqlList = new List<String>();
             String sql = "DROP TABLE IF EXISTS " + tableName;
             sqlList.Add(sql);
-            return await Task.Run(() => ExecuteSQL(sqlList));
+            return await Task.Run(() => ExecuteSQL(sqlList),cancellationToken);
         }
 
         /// <summary>
@@ -395,14 +395,14 @@ namespace GatheringTimer.Data.Database
         /// <param name="dataSource"></param>
         /// <param name="column"></param>
         /// <returns></returns>
-        public async Task<bool> AddColumn<T>(String column)
+        public async Task<bool> AddColumn<T>(String column, CancellationToken cancellationToken)
         {
             Type type = typeof(T);
             String tableName = type.Name;
             List<String> sqlList = new List<String>();
             String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + column;
             sqlList.Add(sql);
-            return await Task.Run(() => ExecuteSQL(sqlList));
+            return await Task.Run(() => ExecuteSQL(sqlList),cancellationToken);
         }
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace GatheringTimer.Data.Database
         /// <param name="dataSource"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public async Task<bool> InsertRowByRow<T>(List<T> list)
+        public async Task<bool> InsertRowByRow<T>(List<T> list, CancellationToken cancellationToken)
         {
             Dictionary<ParseListKey, Object> parseListForSQLWithoutNull = ParseListForSQLWithoutNull(list);
             String tableName = (String)parseListForSQLWithoutNull[ParseListKey.TableName];
@@ -451,7 +451,7 @@ namespace GatheringTimer.Data.Database
                 {
                     writerLock.ReleaseWriterLock();
                 }
-            });
+            },cancellationToken);
 
         }
 
@@ -463,7 +463,7 @@ namespace GatheringTimer.Data.Database
         /// <param name="list"></param>
         /// <param name="unionLimit"></param>
         /// <returns></returns>
-        public async Task<bool> InsertRowUnion<T>(List<T> list, int unionLimit)
+        public async Task<bool> InsertRowUnion<T>(List<T> list, int unionLimit, CancellationToken cancellationToken)
         {
             Dictionary<ParseListKey, Object> parseListForSQLWithNull = ParseListForSQLWithNull(list);
             String tableName = (String)parseListForSQLWithNull[ParseListKey.TableName];
@@ -524,7 +524,7 @@ namespace GatheringTimer.Data.Database
                 {
                     writerLock.ReleaseWriterLock();
                 }
-            });
+            },cancellationToken);
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace GatheringTimer.Data.Database
         /// <param name="dataSource"></param>
         /// <param name="conditionT"></param>
         /// <returns></returns>
-        public async Task<bool> Delete<T>(String condition)
+        public async Task<bool> Delete<T>(String condition, CancellationToken cancellationToken)
         {
             Type type = typeof(T);
             String tableName = type.Name;
@@ -554,7 +554,7 @@ namespace GatheringTimer.Data.Database
                 {
                     writerLock.ReleaseWriterLock();
                 }
-            });
+            },cancellationToken);
 
         }
 
@@ -567,7 +567,7 @@ namespace GatheringTimer.Data.Database
         /// <param name="setValues"></param>
         /// <param name="condition"></param>
         /// <returns></returns>
-        public async Task<bool> Update<T>(String setValues, String condition)
+        public async Task<bool> Update<T>(String setValues, String condition, CancellationToken cancellationToken)
         {
             Type type = typeof(T);
             String tableName = type.Name;
@@ -586,10 +586,10 @@ namespace GatheringTimer.Data.Database
                 {
                     writerLock.ReleaseWriterLock();
                 }
-            });
+            },cancellationToken);
         }
 
-        public async Task<bool> UpdateRowByRow<T>(List<T> list, List<String> setColumnList, List<String> conditionColumnList)
+        public async Task<bool> UpdateRowByRow<T>(List<T> list, List<String> setColumnList, List<String> conditionColumnList, CancellationToken cancellationToken)
         {
             Dictionary<ParseListKey, Object> parseListForSQLWithoutNull = ParseListForSQLWithoutNull(list);
             String tableName = (String)parseListForSQLWithoutNull[ParseListKey.TableName];
@@ -648,7 +648,7 @@ namespace GatheringTimer.Data.Database
                 {
                     writerLock.ReleaseWriterLock();
                 }
-            });
+            },cancellationToken);
         }
 
         /// <summary>
@@ -693,7 +693,7 @@ namespace GatheringTimer.Data.Database
             }
         }
 
-        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t, List<string> conditionKeywordList, int? limit)
+        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t, List<string> conditionKeywordList, int? limit, CancellationToken cancellationToken)
         {
 
             List<string> columns = new List<string>();
@@ -791,16 +791,16 @@ namespace GatheringTimer.Data.Database
                 {
                     writerLock.ReleaseReaderLock();
                 }
-            });
+            },cancellationToken);
 
         }
 
-        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t)
+        public async Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t, CancellationToken cancellationToken)
         {
-            return await Select<T>(conditionColumnList, conditionList, t, null, null);
+            return await Select<T>(conditionColumnList, conditionList, t, null, null,cancellationToken);
         }
 
-        public async Task<List<T>> Select<T>(List<string> conditionList, T t)
+        public async Task<List<T>> Select<T>(List<string> conditionList, T t, CancellationToken cancellationToken)
         {
             List<string> conditionColumnList = new List<string>();
             foreach (PropertyInfo propertyInfo in t.GetType().GetProperties())
@@ -814,7 +814,7 @@ namespace GatheringTimer.Data.Database
                     }
                 }
             }
-            return await Select<T>(conditionColumnList, conditionList, t, null, null);
+            return await Select<T>(conditionColumnList, conditionList, t, null, null,cancellationToken);
         }
     }
 }

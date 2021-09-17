@@ -66,16 +66,17 @@ namespace GatheringTimer
             this.eorzeaTimerColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.eorzeaTimerColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.eorzeaTimerColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.detailList = new System.Windows.Forms.ListBox();
-            this.configTab = new System.Windows.Forms.TabPage();
             this.eorzeaTimerMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.detailList = new System.Windows.Forms.ListBox();
+            this.configTab = new System.Windows.Forms.TabPage();
+            this.syncCancelButton = new System.Windows.Forms.Button();
             this.tabControlGlobal.SuspendLayout();
             this.pointTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gatheringPointVIew)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.eorzeaTimer)).BeginInit();
-            this.configTab.SuspendLayout();
             this.eorzeaTimerMenuStrip.SuspendLayout();
+            this.configTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // searchLabel
@@ -179,13 +180,13 @@ namespace GatheringTimer
             this.eorzeaTimerColumn2,
             this.eorzeaTimerColumn3,
             this.eorzeaTimerColumn4});
+            this.eorzeaTimer.ContextMenuStrip = this.eorzeaTimerMenuStrip;
             this.eorzeaTimer.Location = new System.Drawing.Point(27, 217);
             this.eorzeaTimer.Name = "eorzeaTimer";
             this.eorzeaTimer.ReadOnly = true;
             this.eorzeaTimer.RowTemplate.Height = 23;
             this.eorzeaTimer.Size = new System.Drawing.Size(475, 103);
             this.eorzeaTimer.TabIndex = 1;
-            this.eorzeaTimer.ContextMenuStrip = this.eorzeaTimerMenuStrip;
             this.eorzeaTimer.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.EorzeaTimer_MouseDoubleClick);
             // 
             // eorzeaTimerColumn1
@@ -212,6 +213,20 @@ namespace GatheringTimer
             this.eorzeaTimerColumn4.Name = "eorzeaTimerColumn4";
             this.eorzeaTimerColumn4.ReadOnly = true;
             // 
+            // eorzeaTimerMenuStrip
+            // 
+            this.eorzeaTimerMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem});
+            this.eorzeaTimerMenuStrip.Name = "eorzeaTimerMenuStrip";
+            this.eorzeaTimerMenuStrip.Size = new System.Drawing.Size(114, 26);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.EorzeaTimer_DeleteClick);
+            // 
             // detailList
             // 
             this.detailList.FormattingEnabled = true;
@@ -224,6 +239,7 @@ namespace GatheringTimer
             // 
             // configTab
             // 
+            this.configTab.Controls.Add(this.syncCancelButton);
             this.configTab.Controls.Add(this.syncData);
             this.configTab.Location = new System.Drawing.Point(4, 22);
             this.configTab.Name = "configTab";
@@ -233,19 +249,15 @@ namespace GatheringTimer
             this.configTab.Text = "设置";
             this.configTab.UseVisualStyleBackColor = true;
             // 
-            // eorzeaTimerMenuStrip
+            // syncCancelButton
             // 
-            this.eorzeaTimerMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem});
-            this.eorzeaTimerMenuStrip.Name = "eorzeaTimerMenuStrip";
-            this.eorzeaTimerMenuStrip.Size = new System.Drawing.Size(181, 48);
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.EorzeaTimer_DeleteClick);
+            this.syncCancelButton.Location = new System.Drawing.Point(165, 18);
+            this.syncCancelButton.Name = "syncCancelButton";
+            this.syncCancelButton.Size = new System.Drawing.Size(88, 27);
+            this.syncCancelButton.TabIndex = 7;
+            this.syncCancelButton.Text = "取消同步";
+            this.syncCancelButton.UseVisualStyleBackColor = true;
+            this.syncCancelButton.Click += new System.EventHandler(this.SyncCancel_Click);
             // 
             // GatheringTimerForm
             // 
@@ -261,8 +273,8 @@ namespace GatheringTimer
             this.pointTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gatheringPointVIew)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.eorzeaTimer)).EndInit();
-            this.configTab.ResumeLayout(false);
             this.eorzeaTimerMenuStrip.ResumeLayout(false);
+            this.configTab.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -287,6 +299,7 @@ namespace GatheringTimer
         private DataGridView gatheringPointVIew;
         private ContextMenuStrip eorzeaTimerMenuStrip;
         private ToolStripMenuItem deleteToolStripMenuItem;
+        private Button syncCancelButton;
         private System.Windows.Forms.Label searchLabel;
 
         #endregion
@@ -394,17 +407,42 @@ namespace GatheringTimer
                 {
                     syncDataStatus = false;
                 }
-                Logger.Info("Sync Start");
                 try
                 {
-                    await DataManagement.Sync();
+                    await GatheringTimerMain.Sync();
                 }
                 finally
                 {
-                    Logger.Info("Sync Finish");
                     lock (syncDataLock)
                     {
                         syncDataStatus = true;
+                    }
+
+                }
+            }
+        }
+
+        private bool syncCancelStatus = true;
+        public object syncCancelLock = new object();
+        private async void SyncCancel_Click(object sender, EventArgs e)
+        {
+            if (syncCancelStatus)
+            {
+                lock (syncCancelLock)
+                {
+                    syncCancelStatus = false;
+                }
+                Logger.Info("Sync Cancel");
+                try
+                {
+                    GatheringTimerMain.SyncCancel();
+                }
+                finally
+                {
+                    Logger.Info("Sync Cancel Already");
+                    lock (syncCancelLock)
+                    {
+                        syncCancelStatus = true;
                     }
 
                 }

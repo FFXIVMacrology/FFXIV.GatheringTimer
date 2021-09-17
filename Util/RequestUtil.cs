@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GatheringTimer.Data.Model;
 using System.Net;
-
+using System.Threading;
 
 namespace GatheringTimer.Util
 {
@@ -18,13 +18,13 @@ namespace GatheringTimer.Util
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public static async Task<String> GetResponseDataAsync(String url, String param)
+        public static async Task<String> GetResponseDataAsync(String url, String param, CancellationToken cancellationToken)
         {
             String html = "";
             var restClient = new RestClient(url);
             try
             {
-                html = await restClient.MakeRequestAsync(param);
+                html = await restClient.MakeRequestAsync(param,cancellationToken);
             }
             catch (Exception e)
             {
@@ -40,13 +40,13 @@ namespace GatheringTimer.Util
         /// <param name="jsonList"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static async Task<List<T>> ParseResultList<T>(List<String> jsonList, String key)
+        public static async Task<List<T>> ParseResultList<T>(List<String> jsonList, String key,CancellationToken cancellationToken)
         {
             List<T> list = new List<T>();
             Queue<Task> tasks = new Queue<Task>();
             foreach (String json in jsonList)
             {
-                Task task = JsonToObjectAsync<List<T>>(json, key);
+                Task task = JsonToObjectAsync<List<T>>(json, key,cancellationToken);
                 tasks.Enqueue(task);
             }
             await Task.WhenAll(tasks);
@@ -67,7 +67,7 @@ namespace GatheringTimer.Util
         /// <param name="json"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static async Task<Object> JsonToObjectAsync<T>(String json, String key)
+        public static async Task<Object> JsonToObjectAsync<T>(String json, String key, CancellationToken cancellationToken)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace GatheringTimer.Util
                 String value = jsonObject.GetValue(key).ToString();
                 if (IsJsonArray(value) || IsJsonObject(value))
                 {
-                    return await Task.Run(() => (T)JsonConvert.DeserializeObject<T>(value));
+                    return await Task.Run(() => (T)JsonConvert.DeserializeObject<T>(value),cancellationToken);
                 }
                 return value;
 

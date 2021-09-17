@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Util;
@@ -61,11 +62,11 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        private static async Task<List<String>> RequestCafeMakerAsync(String url, String param)
+        private static async Task<List<String>> RequestCafeMakerAsync(String url, String param,CancellationToken cancellationToken)
         {
             ServicePointManager.DefaultConnectionLimit = 12;
-            String json = await RequestUtil.GetResponseDataAsync(url, param);
-            Pagination pagination = (Pagination)await RequestUtil.JsonToObjectAsync<Pagination>(json, "Pagination");
+            String json = await RequestUtil.GetResponseDataAsync(url, param, cancellationToken);
+            Pagination pagination = (Pagination)await RequestUtil.JsonToObjectAsync<Pagination>(json, "Pagination", cancellationToken);
             List<String> jsonList = new List<String>() { json };
             if (pagination.Page == pagination.PageTotal)
             {
@@ -74,7 +75,7 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
             Queue<Task> tasks = new Queue<Task>();
             for (int page = 2; page <= pagination.PageTotal; page++)
             {
-                tasks.Enqueue(RequestUtil.GetResponseDataAsync(url, param + "&Page=" + page));
+                tasks.Enqueue(RequestUtil.GetResponseDataAsync(url, param + "&Page=" + page, cancellationToken));
             }
             await Task.WhenAll(tasks);
             foreach (Task<String> task in tasks)
@@ -92,10 +93,10 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        private static async Task<List<T>> GetDataList<T>(String url, String param, String key)
+        private static async Task<List<T>> GetDataList<T>(String url, String param, String key, CancellationToken cancellationToken)
         {
-            List<String> jsonList = await RequestCafeMakerAsync(url, param);
-            return await RequestUtil.ParseResultList<T>(jsonList, key);
+            List<String> jsonList = await RequestCafeMakerAsync(url, param,cancellationToken);
+            return await RequestUtil.ParseResultList<T>(jsonList, key,cancellationToken);
         }
 
         private static void IntoCache<T>(List<T> tlist)
@@ -103,27 +104,27 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
             typeof(CafeMakerUpdater).GetProperty(typeof(T).Name + "Cache").SetValue(typeof(CafeMakerUpdater), tlist);
         }
 
-        private static async Task<bool> GetRawData<T>(String url)
+        private static async Task<bool> GetRawData<T>(String url, CancellationToken cancellationToken)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            List<T> dataList = await GetDataList<T>(url, "", "Results");
+            List<T> dataList = await GetDataList<T>(url, "", "Results",cancellationToken);
             IntoCache<T>(dataList);
             Logger.Info("Get CafeMaker " + typeof(T).Name + " Data in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
             return true;
 
         }
 
-        public static async Task<bool> CafeMakerDataUpdate()
+        public static async Task<bool> CafeMakerDataUpdate(CancellationToken cancellationToken)
         {
             try
             {
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
                 Queue<Task> tasks = new Queue<Task>();
-                tasks.Enqueue(GetRawData<Item>(GetCafeMakerEntityUrl<Item>(CAFE_MAKER_URL,3000)));
-                tasks.Enqueue(GetRawData<SpearfishingItem>(GetCafeMakerEntityUrl<SpearfishingItem>(CAFE_MAKER_URL, 3000)));
-                tasks.Enqueue(GetRawData<PlaceName>(GetCafeMakerEntityUrl<PlaceName>(CAFE_MAKER_URL, 3000)));
+                tasks.Enqueue(GetRawData<Item>(GetCafeMakerEntityUrl<Item>(CAFE_MAKER_URL,3000),cancellationToken));
+                tasks.Enqueue(GetRawData<SpearfishingItem>(GetCafeMakerEntityUrl<SpearfishingItem>(CAFE_MAKER_URL, 3000),cancellationToken));
+                tasks.Enqueue(GetRawData<PlaceName>(GetCafeMakerEntityUrl<PlaceName>(CAFE_MAKER_URL, 3000),cancellationToken));
                 await Task.WhenAll(tasks);
                 Logger.Info("Finished CafeMakerDataUpdate in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
                 return true;

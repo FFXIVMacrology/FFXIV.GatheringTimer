@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GatheringTimer
@@ -99,31 +100,33 @@ namespace GatheringTimer
             GC.Collect();
             if (DatabaseInitialization())
             {
+                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                CancellationToken cancellation = cancellationTokenSource.Token;
                 if (force)
                 {
-                    itemCache = await sqliteDatabase.Select<Item>(new List<string>(), new Item());
-                    gatheringItemCache = await sqliteDatabase.Select<GatheringItem>(new List<string>(), new GatheringItem());
-                    spearfishingItemCache = await sqliteDatabase.Select<SpearfishingItem>(new List<string>(), new SpearfishingItem());
-                    gatheringPointBaseCache = await sqliteDatabase.Select<GatheringPointBase>(new List<string>(), new GatheringPointBase());
-                    gatheringPointBaseExtensionCache = await sqliteDatabase.Select<GatheringPointBaseExtension>(new List<string>(), new GatheringPointBaseExtension());
-                    timeConditionExtensionCache = await sqliteDatabase.Select<TimeConditionExtension>(new List<string>(), new TimeConditionExtension());
-                    gatheringPointCache = await sqliteDatabase.Select<GatheringPoint>(new List<string>(), new GatheringPoint());
-                    placeNameCache = await sqliteDatabase.Select<PlaceName>(new List<string>(), new PlaceName());
-                    territoryTypeCache = await sqliteDatabase.Select<TerritoryType>(new List<string>(), new TerritoryType());
-                    mapCache = await sqliteDatabase.Select<Map>(new List<string>(), new Map());
+                    itemCache = await sqliteDatabase.Select<Item>(new List<string>(), new Item(), cancellation);
+                    gatheringItemCache = await sqliteDatabase.Select<GatheringItem>(new List<string>(), new GatheringItem(), cancellation);
+                    spearfishingItemCache = await sqliteDatabase.Select<SpearfishingItem>(new List<string>(), new SpearfishingItem(), cancellation);
+                    gatheringPointBaseCache = await sqliteDatabase.Select<GatheringPointBase>(new List<string>(), new GatheringPointBase(), cancellation);
+                    gatheringPointBaseExtensionCache = await sqliteDatabase.Select<GatheringPointBaseExtension>(new List<string>(), new GatheringPointBaseExtension(), cancellation);
+                    timeConditionExtensionCache = await sqliteDatabase.Select<TimeConditionExtension>(new List<string>(), new TimeConditionExtension(), cancellation);
+                    gatheringPointCache = await sqliteDatabase.Select<GatheringPoint>(new List<string>(), new GatheringPoint(), cancellation);
+                    placeNameCache = await sqliteDatabase.Select<PlaceName>(new List<string>(), new PlaceName(), cancellation);
+                    territoryTypeCache = await sqliteDatabase.Select<TerritoryType>(new List<string>(), new TerritoryType(), cancellation);
+                    mapCache = await sqliteDatabase.Select<Map>(new List<string>(), new Map(), cancellation);
                 }
                 else
                 {
-                    itemCache = itemCache ?? await sqliteDatabase.Select<Item>(new List<string>(), new Item());
-                    gatheringItemCache = gatheringItemCache ?? await sqliteDatabase.Select<GatheringItem>(new List<string>(), new GatheringItem());
-                    spearfishingItemCache = spearfishingItemCache ?? await sqliteDatabase.Select<SpearfishingItem>(new List<string>(), new SpearfishingItem());
-                    gatheringPointBaseCache = gatheringPointBaseCache ?? await sqliteDatabase.Select<GatheringPointBase>(new List<string>(), new GatheringPointBase());
-                    gatheringPointBaseExtensionCache = gatheringPointBaseExtensionCache ?? await sqliteDatabase.Select<GatheringPointBaseExtension>(new List<string>(), new GatheringPointBaseExtension());
-                    timeConditionExtensionCache = timeConditionExtensionCache ?? await sqliteDatabase.Select<TimeConditionExtension>(new List<string>(), new TimeConditionExtension());
-                    gatheringPointCache = gatheringPointCache ?? await sqliteDatabase.Select<GatheringPoint>(new List<string>(), new GatheringPoint());
-                    placeNameCache = placeNameCache ?? await sqliteDatabase.Select<PlaceName>(new List<string>(), new PlaceName());
-                    territoryTypeCache = territoryTypeCache ?? await sqliteDatabase.Select<TerritoryType>(new List<string>(), new TerritoryType());
-                    mapCache = mapCache ?? await sqliteDatabase.Select<Map>(new List<string>(), new Map());
+                    itemCache = itemCache ?? await sqliteDatabase.Select<Item>(new List<string>(), new Item(), cancellation);
+                    gatheringItemCache = gatheringItemCache ?? await sqliteDatabase.Select<GatheringItem>(new List<string>(), new GatheringItem(), cancellation);
+                    spearfishingItemCache = spearfishingItemCache ?? await sqliteDatabase.Select<SpearfishingItem>(new List<string>(), new SpearfishingItem(), cancellation);
+                    gatheringPointBaseCache = gatheringPointBaseCache ?? await sqliteDatabase.Select<GatheringPointBase>(new List<string>(), new GatheringPointBase(), cancellation);
+                    gatheringPointBaseExtensionCache = gatheringPointBaseExtensionCache ?? await sqliteDatabase.Select<GatheringPointBaseExtension>(new List<string>(), new GatheringPointBaseExtension(), cancellation);
+                    timeConditionExtensionCache = timeConditionExtensionCache ?? await sqliteDatabase.Select<TimeConditionExtension>(new List<string>(), new TimeConditionExtension(), cancellation);
+                    gatheringPointCache = gatheringPointCache ?? await sqliteDatabase.Select<GatheringPoint>(new List<string>(), new GatheringPoint(), cancellation);
+                    placeNameCache = placeNameCache ?? await sqliteDatabase.Select<PlaceName>(new List<string>(), new PlaceName(), cancellation);
+                    territoryTypeCache = territoryTypeCache ?? await sqliteDatabase.Select<TerritoryType>(new List<string>(), new TerritoryType(), cancellation);
+                    mapCache = mapCache ?? await sqliteDatabase.Select<Map>(new List<string>(), new Map(), cancellation);
                 }
 
             }

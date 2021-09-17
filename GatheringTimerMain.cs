@@ -10,6 +10,32 @@ namespace GatheringTimer
 
     public class GatheringTimerMain
     {
+        public static async Task Sync()
+        {
+            try
+            {
+                Logger.Info("Sync Start");
+                await DataManagement.Sync();
+            }
+            catch (TaskCanceledException)
+            {
+                Logger.Info("Sync Cacnel");
+            }
+            catch (Exception ex) {
+                Logger.Error("Sync Error",ex);
+            }
+            finally
+            {
+                Logger.Info("Sync Finish");
+            }
+
+        }
+
+        public static void SyncCancel()
+        {
+            DataManagement.SyncCancel();
+        }
+
         public static async Task GetItems(GatheringTimerForm gatheringTimerForm, String searchStr)
         {
 
@@ -25,7 +51,7 @@ namespace GatheringTimer
 
         }
 
-        public static async Task<Data.Model.DisplayVo.Item> GetItem(GatheringTimerForm gatheringTimerForm,int itemId)
+        public static async Task<Data.Model.DisplayVo.Item> GetItem(GatheringTimerForm gatheringTimerForm, int itemId)
         {
 
             try
@@ -71,7 +97,8 @@ namespace GatheringTimer
 
         public static async Task CreateTimer(GatheringTimerForm gatheringTimerForm, int gatheringPointId)
         {
-            await Task.Run(()=> {
+            await Task.Run(() =>
+            {
                 try
                 {
                     Timer.TimerManagement.CreateTimer(gatheringPointId);

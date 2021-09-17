@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Data.ThirdParty.HuiJiWiki;
@@ -21,13 +22,13 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
             typeof(HuiJiWikiUpdater).GetProperty(typeof(T).Name + "Cache").SetValue(typeof(HuiJiWikiUpdater), tlist);
         }
 
-        private static async Task<bool> GetExtension()
+        private static async Task<bool> GetExtension(CancellationToken cancellationToken)
         {
 
             ServicePointManager.DefaultConnectionLimit = 12;
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            String responseData = await RequestUtil.GetResponseDataAsync("https://ff14.huijiwiki.com/wiki/GatheringTimer", "");
+            String responseData = await RequestUtil.GetResponseDataAsync("https://ff14.huijiwiki.com/wiki/GatheringTimer", "",cancellationToken);
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(responseData);
             HtmlNode keywordNode = doc.DocumentNode.SelectSingleNode("/html/head/script[2]");
@@ -109,12 +110,12 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
             }
         }
 
-        public static async Task<bool> HuiJiWikiDataUpdate()
+        public static async Task<bool> HuiJiWikiDataUpdate( CancellationToken cancellationToken)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
             Queue<Task> tasks = new Queue<Task>();
-            tasks.Enqueue(GetExtension());
+            tasks.Enqueue(GetExtension(cancellationToken));
             await Task.WhenAll(tasks);
             Logger.Info("Finished HuiJiWikiDataUpdate in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
             return true;

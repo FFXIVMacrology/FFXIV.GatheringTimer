@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Util;
@@ -66,11 +67,11 @@ namespace GatheringTimer.Data.ThirdParty.XIVApi
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        private static async Task<List<String>> RequestXIVApiAsync(String url, String param)
+        private static async Task<List<String>> RequestXIVApiAsync(String url, String param, CancellationToken cancellationToken)
         {
             ServicePointManager.DefaultConnectionLimit = 12;
-            String json = await RequestUtil.GetResponseDataAsync(url, param);
-            Pagination pagination = (Pagination)await RequestUtil.JsonToObjectAsync<Pagination>(json, "Pagination");
+            String json = await RequestUtil.GetResponseDataAsync(url, param,cancellationToken);
+            Pagination pagination = (Pagination)await RequestUtil.JsonToObjectAsync<Pagination>(json, "Pagination",cancellationToken);
             List<String> jsonList = new List<String>() { json };
             if (pagination.Page == pagination.PageTotal)
             {
@@ -79,7 +80,7 @@ namespace GatheringTimer.Data.ThirdParty.XIVApi
             Queue<Task> tasks = new Queue<Task>();
             for (int page = 2; page <= pagination.PageTotal; page++)
             {
-                tasks.Enqueue(RequestUtil.GetResponseDataAsync(url, param + "&Page=" + page));
+                tasks.Enqueue(RequestUtil.GetResponseDataAsync(url, param + "&Page=" + page, cancellationToken));
             }
             await Task.WhenAll(tasks);
             foreach (Task<String> task in tasks)
@@ -97,10 +98,10 @@ namespace GatheringTimer.Data.ThirdParty.XIVApi
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        private static async Task<List<T>> GetDataList<T>(String url, String param, String key)
+        private static async Task<List<T>> GetDataList<T>(String url, String param, String key, CancellationToken cancellationToken)
         {
-            List<String> jsonList = await RequestXIVApiAsync(url, param);
-            return await RequestUtil.ParseResultList<T>(jsonList, key);
+            List<String> jsonList = await RequestXIVApiAsync(url, param, cancellationToken);
+            return await RequestUtil.ParseResultList<T>(jsonList, key, cancellationToken);
         }
 
         private static void IntoCache<T>(List<T> tlist)
@@ -108,18 +109,18 @@ namespace GatheringTimer.Data.ThirdParty.XIVApi
             typeof(XIVApiUpdater).GetProperty(typeof(T).Name + "Cache").SetValue(typeof(XIVApiUpdater), tlist);
         }
 
-        private static async Task<bool> GetRawData<T>(String url)
+        private static async Task<bool> GetRawData<T>(String url, CancellationToken cancellToken)
         {
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            List<T> dataList = await GetDataList<T>(url, "", "Results");
+            List<T> dataList = await GetDataList<T>(url, "", "Results",cancellToken);
             IntoCache<T>(dataList);
             Logger.Info("Get XIVApi " + typeof(T).Name + " Data in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
             return true;
         }
 
-        public static async Task<bool> XIVApiDataUpdate()
+        public static async Task<bool> XIVApiDataUpdate(CancellationToken cancellToken)
         {
 
             try
@@ -127,14 +128,15 @@ namespace GatheringTimer.Data.ThirdParty.XIVApi
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
                 Queue<Task> tasks = new Queue<Task>();
-                tasks.Enqueue(GetRawData<Item>(GetXIVApiEntityUrl<Item>(XIV_API_URL, 3000)));
-                tasks.Enqueue(GetRawData<GatheringItem>(GetXIVApiEntityUrl<GatheringItem>(XIV_API_URL, 3000)));
-                tasks.Enqueue(GetRawData<SpearfishingItem>(GetXIVApiEntityUrl<SpearfishingItem>(XIV_API_URL, 3000)));
-                tasks.Enqueue(GetRawData<GatheringPointBase>(GetXIVApiEntityUrl<GatheringPointBase>(XIV_API_URL, 3000)));
-                tasks.Enqueue(GetRawData<GatheringPoint>(GetXIVApiEntityUrl<GatheringPoint>(XIV_API_URL, 3000)));
-                tasks.Enqueue(GetRawData<Map>(GetXIVApiEntityUrl<Map>(XIV_API_URL, 3000)));
-                tasks.Enqueue(GetRawData<PlaceName>(GetXIVApiEntityUrl<PlaceName>(XIV_API_URL, 3000)));
-                tasks.Enqueue(GetRawData<TerritoryType>(GetXIVApiEntityUrl<TerritoryType>(XIV_API_URL, 3000)));
+                tasks.Enqueue(GetRawData<Item>(GetXIVApiEntityUrl<Item>(XIV_API_URL, 3000), cancellToken));
+                tasks.Enqueue(GetRawData<GatheringItem>(GetXIVApiEntityUrl<GatheringItem>(XIV_API_URL, 3000), cancellToken));
+                tasks.Enqueue(GetRawData<SpearfishingItem>(GetXIVApiEntityUrl<SpearfishingItem>(XIV_API_URL, 3000), cancellToken));
+                tasks.Enqueue(GetRawData<GatheringPointBase>(GetXIVApiEntityUrl<GatheringPointBase>(XIV_API_URL, 3000), cancellToken));
+                tasks.Enqueue(GetRawData<GatheringPoint>(GetXIVApiEntityUrl<GatheringPoint>(XIV_API_URL, 3000), cancellToken));
+                tasks.Enqueue(GetRawData<Map>(GetXIVApiEntityUrl<Map>(XIV_API_URL, 3000), cancellToken));
+                tasks.Enqueue(GetRawData<PlaceName>(GetXIVApiEntityUrl<PlaceName>(XIV_API_URL, 3000), cancellToken));
+                tasks.Enqueue(GetRawData<TerritoryType>(GetXIVApiEntityUrl<TerritoryType>(XIV_API_URL, 3000), cancellToken));
+                cancellToken.ThrowIfCancellationRequested();
                 await Task.WhenAll(tasks);
                 Logger.Info("Finished XIVApiDataUpdate in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
                 return true;
