@@ -8,52 +8,51 @@ using System.Windows.Forms;
 
 namespace GatheringTimer
 {
+    public class TextBoxAppender : AppenderSkeleton
+    {
+        public static TextBox _textBox;
+        public string FormName { get; set; }
+        public string TextBoxName { get; set; }
+
+        protected override void Append(LoggingEvent loggingEvent)
+        {
+            if (_textBox != null)
+            {
+                _textBox.AppendText(loggingEvent.RenderedMessage + Environment.NewLine);
+            }
+            else
+            {
+
+                if (String.IsNullOrEmpty(FormName) ||
+                    String.IsNullOrEmpty(TextBoxName))
+                    return;
+
+                Form form = Application.OpenForms[FormName];
+                if (form == null)
+                    return;
+
+                _textBox = form.Controls[TextBoxName] as TextBox;
+                if (_textBox == null)
+                    return;
+
+                form.FormClosing += (s, e) => _textBox = null;
+            }
+
+
+        }
+    }
+
     public class Logger
     {
         public static TextBox textBoxLogger;
 
-        private static System.Threading.Timer timer;
-
-        public static void InitTimer()
-        {
-            timer = new System.Threading.Timer(
-                    new System.Threading.TimerCallback(ReadLogFile),
-                    null,
-                    0,
-                    1000
-                    );
-        }
-
-        private static void ReadLogFile(object param) {
-            string oldValue = string.Empty, newValue = string.Empty;
-            string path = "./Plugins/FFXIV.GatheringTimer/Log/" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
-            //if (File.Exists(path)) {
-            //    using (StreamReader read = new StreamReader(path, true))
-            //    {
-            //        do
-            //        {
-            //            newValue = read.ReadLine();
-            //            oldValue = newValue != null ? newValue : oldValue;
-            //        } while (newValue != null);
-            //    }
-            //    if (textBoxLogger != null)
-            //    {
-            //        textBoxLogger.AppendText(oldValue);
-            //        textBoxLogger.AppendText(Environment.NewLine);
-            //        textBoxLogger.Refresh();
-            //    }
-
-            //}
-
-        }
-
-
         public static void Error(object msg)
         {
             log4net.ILog log = log4net.LogManager.GetLogger("logerror");
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 log.Error(msg);
-            }); 
+            });
         }
 
         public static void Error(object msg, Exception ex)
@@ -61,13 +60,15 @@ namespace GatheringTimer
             log4net.ILog log = log4net.LogManager.GetLogger("logerror");
             if (ex != null)
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     log.Error(msg, ex);
                 });
             }
             else
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     log.Error(msg);
                 });
             }
@@ -76,7 +77,8 @@ namespace GatheringTimer
         public static void Warn(object msg)
         {
             log4net.ILog log = log4net.LogManager.GetLogger("logwarn");
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 log.Warn(msg);
             });
         }
@@ -86,13 +88,15 @@ namespace GatheringTimer
             log4net.ILog log = log4net.LogManager.GetLogger("logwarn");
             if (ex != null)
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     log.Warn(msg, ex);
                 });
             }
             else
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     log.Warn(msg);
                 });
             }
@@ -101,7 +105,8 @@ namespace GatheringTimer
         public static void Info(object msg)
         {
             log4net.ILog log = log4net.LogManager.GetLogger("loginfo");
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 log.Info(msg);
             });
         }
@@ -109,7 +114,8 @@ namespace GatheringTimer
         public static void Debug(object msg)
         {
             log4net.ILog log = log4net.LogManager.GetLogger("logdebug");
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 log.Debug(msg);
             });
         }
@@ -117,7 +123,8 @@ namespace GatheringTimer
         public static void Debug(Exception ex)
         {
             log4net.ILog log = log4net.LogManager.GetLogger("logdebug");
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 log.Debug(ex.Message.ToString() + "/r/n" + ex.Source.ToString() + "/r/n" + ex.TargetSite.ToString() + "/r/n" + ex.StackTrace.ToString());
             });
         }
@@ -127,13 +134,15 @@ namespace GatheringTimer
             log4net.ILog log = log4net.LogManager.GetLogger("logdebug");
             if (ex != null)
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     log.Debug(msg, ex);
                 });
             }
             else
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     log.Debug(msg);
                 });
             }

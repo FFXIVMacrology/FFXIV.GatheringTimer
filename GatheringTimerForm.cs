@@ -381,8 +381,7 @@ namespace GatheringTimer
 
         private void GatheringTimerForm_Load(object sender, EventArgs e)
         {
-            Logger.textBoxLogger = this.textBoxLogger;
-            Logger.InitTimer();
+            TextBoxAppender._textBox = this.textBoxLogger;
         }
 
         private bool syncDataStatus = true;

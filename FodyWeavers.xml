@@ -1,5 +1,8 @@
 ﻿<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
   <Costura>
-    <ExcludeAssemblies>Advanced Combat Tracker</ExcludeAssemblies>
+    <ExcludeAssemblies>
+      Advanced Combat Tracker
+      log4net
+    </ExcludeAssemblies>
   </Costura>
 </Weavers>
