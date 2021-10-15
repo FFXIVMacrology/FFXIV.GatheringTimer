@@ -13,22 +13,25 @@ using Newtonsoft.Json.Linq;
 
 namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
 {
-    public static class HuiJiWikiUpdater
+    public class HuiJiWikiUpdater : BaseUpdater
     {
-        public static List<GatheringPointBaseExtension> GatheringPointBaseExtensionCache { get; set; } = default;
-        public static List<TimeConditionExtension> TimeConditionExtensionCache { get; set; } = default;
-        private static void IntoCache<T>(List<T> tlist)
+        private static HuiJiWikiUpdater updater = new HuiJiWikiUpdater();
+
+        public static HuiJiWikiUpdater Updater()
         {
-            typeof(HuiJiWikiUpdater).GetProperty(typeof(T).Name + "Cache").SetValue(typeof(HuiJiWikiUpdater), tlist);
+            return updater;
         }
 
-        private static async Task<bool> GetExtension(CancellationToken cancellationToken)
+        public List<GatheringPointBaseExtension> GatheringPointBaseExtensionCache { get; set; } = default;
+        public List<TimeConditionExtension> TimeConditionExtensionCache { get; set; } = default;
+
+        private async Task<bool> GetExtension(CancellationToken cancellationToken)
         {
 
             ServicePointManager.DefaultConnectionLimit = 12;
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            String responseData = await RequestUtil.GetResponseDataAsync("https://ff14.huijiwiki.com/wiki/GatheringTimer", "",cancellationToken);
+            String responseData = await RequestUtil.GetResponseDataAsync("https://ff14.huijiwiki.com/wiki/GatheringTimer", "", cancellationToken);
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(responseData);
             HtmlNode keywordNode = doc.DocumentNode.SelectSingleNode("/html/head/script[2]");
@@ -54,9 +57,10 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
                         entity.LocationX = jsonObject[property.Name]["位置"]["X"].ToString();
                         entity.LocationY = jsonObject[property.Name]["位置"]["Y"].ToString();
                         entity.Orderly = jsonObject[property.Name]["无序列表"].ToString().ToLowerInvariant().Equals("false") ? 1 : 0;
-                        entity.TimeConditions = jsonObject[property.Name]["时间条件"] !=null?(jsonObject[property.Name]["时间条件"].ToString().ToLowerInvariant().Equals("true")?1:0):0;
+                        entity.TimeConditions = jsonObject[property.Name]["时间条件"] != null ? (jsonObject[property.Name]["时间条件"].ToString().ToLowerInvariant().Equals("true") ? 1 : 0) : 0;
 
-                        if (1 == entity.TimeConditions) {
+                        if (1 == entity.TimeConditions)
+                        {
                             JObject timerList = (JObject)jsonObject[property.Name]["出现时间数据"];
                             IEnumerable<JProperty> timerProperties = timerList.Properties();
                             foreach (JProperty timerProperty in timerProperties)
@@ -68,7 +72,7 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
                                 timer.During = int.Parse(timerList[timerProperty.Name]["dur"].ToString());
                                 timerExtension.Add(timer);
                             }
-                        }                       
+                        }
 
 
                         JObject gatheringList = (JObject)jsonObject[property.Name]["物品列表"];
@@ -90,8 +94,8 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
                     {
                         watch.Reset();
                         watch.Start();
-                        IntoCache<GatheringPointBaseExtension>(baseExtensions);
-                        IntoCache<TimeConditionExtension>(timerExtension);
+                        IntoCache<GatheringPointBaseExtension>(this,baseExtensions);
+                        IntoCache<TimeConditionExtension>(this,timerExtension);
                         Logger.Info("Get HuiJiWiki Extension Data in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
                     }
                     return true;
@@ -110,7 +114,14 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
             }
         }
 
-        public static async Task<bool> HuiJiWikiDataUpdate( CancellationToken cancellationToken)
+        public override void ClearCache()
+        {
+            GatheringPointBaseExtensionCache = default;
+            TimeConditionExtensionCache = default;
+            GC.Collect();
+        }
+
+        public override async Task DataUpdate(CancellationToken cancellationToken)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -118,14 +129,16 @@ namespace GatheringTimer.Data.ThirdParty.HuiJiWiki
             tasks.Enqueue(GetExtension(cancellationToken));
             await Task.WhenAll(tasks);
             Logger.Info("Finished HuiJiWikiDataUpdate in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
-            return true;
         }
 
-        public static void ClearCache()
+        public override async Task Sync(CancellationToken cancellationToken)
         {
-            GatheringPointBaseExtensionCache = default;
-            TimeConditionExtensionCache = default;
-            GC.Collect();
+            Queue<Task> tasks = new Queue<Task>();
+            tasks.Enqueue(Sync<Model.Entity.GatheringPointBaseExtension, GatheringPointBaseExtension>(updater, cancellationToken));
+            tasks.Enqueue(Sync<Model.Entity.TimeConditionExtension, TimeConditionExtension>(updater, cancellationToken));
+            await Task.WhenAll(tasks);
+            ClearCache();
+            Logger.Info("Sync GatheringPointBaseExtension Finish!");
         }
     }
 }

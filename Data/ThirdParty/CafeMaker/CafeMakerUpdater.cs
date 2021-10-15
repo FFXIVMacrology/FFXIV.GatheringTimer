@@ -9,15 +9,22 @@ using GatheringTimer.Util;
 
 namespace GatheringTimer.Data.ThirdParty.CafeMaker
 {
-    public static class CafeMakerUpdater
+    public class CafeMakerUpdater : BaseUpdater
     {
         private static readonly string CAFE_MAKER_URL = "https://cafemaker.wakingsands.com";
 
-        public static List<Item> ItemCache { get; set; } = default;
-        public static List<SpearfishingItem> SpearfishingItemCache { get; set; } = default;
-        public static List<PlaceName> PlaceNameCache { get; set; } = default;
+        private static CafeMakerUpdater updater = new CafeMakerUpdater();
 
-        private static string GetCafeMakerEntityUrl<T>(string serverUrl, int? limit)
+        public static CafeMakerUpdater Updater()
+        {
+            return updater;
+        }
+
+        public List<Item> ItemCache { get; set; } = default;
+        public List<SpearfishingItem> SpearfishingItemCache { get; set; } = default;
+        public List<PlaceName> PlaceNameCache { get; set; } = default;
+
+        private string GetCafeMakerEntityUrl<T>(string serverUrl, int? limit)
         {
 
             Type type = typeof(T);
@@ -62,7 +69,7 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        private static async Task<List<String>> RequestCafeMakerAsync(String url, String param,CancellationToken cancellationToken)
+        private async Task<List<String>> RequestCafeMakerAsync(String url, String param, CancellationToken cancellationToken)
         {
             ServicePointManager.DefaultConnectionLimit = 12;
             String json = await RequestUtil.GetResponseDataAsync(url, param, cancellationToken);
@@ -93,51 +100,24 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        private static async Task<List<T>> GetDataList<T>(String url, String param, String key, CancellationToken cancellationToken)
+        private async Task<List<T>> GetDataList<T>(String url, String param, String key, CancellationToken cancellationToken)
         {
-            List<String> jsonList = await RequestCafeMakerAsync(url, param,cancellationToken);
-            return await RequestUtil.ParseResultList<T>(jsonList, key,cancellationToken);
+            List<String> jsonList = await RequestCafeMakerAsync(url, param, cancellationToken);
+            return await RequestUtil.ParseResultList<T>(jsonList, key, cancellationToken);
         }
 
-        private static void IntoCache<T>(List<T> tlist)
-        {
-            typeof(CafeMakerUpdater).GetProperty(typeof(T).Name + "Cache").SetValue(typeof(CafeMakerUpdater), tlist);
-        }
-
-        private static async Task<bool> GetRawData<T>(String url, CancellationToken cancellationToken)
+        private async Task<bool> GetRawData<T>(String url, CancellationToken cancellationToken)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            List<T> dataList = await GetDataList<T>(url, "", "Results",cancellationToken);
-            IntoCache<T>(dataList);
+            List<T> dataList = await GetDataList<T>(url, "", "Results", cancellationToken);
+            IntoCache<T>(updater, dataList);
             Logger.Info("Get CafeMaker " + typeof(T).Name + " Data in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
             return true;
 
         }
 
-        public static async Task<bool> CafeMakerDataUpdate(CancellationToken cancellationToken)
-        {
-            try
-            {
-                Stopwatch watch = new Stopwatch();
-                watch.Start();
-                Queue<Task> tasks = new Queue<Task>();
-                tasks.Enqueue(GetRawData<Item>(GetCafeMakerEntityUrl<Item>(CAFE_MAKER_URL,3000),cancellationToken));
-                tasks.Enqueue(GetRawData<SpearfishingItem>(GetCafeMakerEntityUrl<SpearfishingItem>(CAFE_MAKER_URL, 3000),cancellationToken));
-                tasks.Enqueue(GetRawData<PlaceName>(GetCafeMakerEntityUrl<PlaceName>(CAFE_MAKER_URL, 3000),cancellationToken));
-                await Task.WhenAll(tasks);
-                Logger.Info("Finished CafeMakerDataUpdate in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Update XIVApiData Error,Exception:" + ex.Message);
-                return false;
-            }
-
-        }
-
-        public static void ClearCache()
+        public override void ClearCache()
         {
             ItemCache = default;
             SpearfishingItemCache = default;
@@ -145,5 +125,74 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
             GC.Collect();
         }
 
+        public override async Task DataUpdate(CancellationToken cancellationToken)
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            Queue<Task> tasks = new Queue<Task>();
+            tasks.Enqueue(GetRawData<Item>(GetCafeMakerEntityUrl<Item>(CAFE_MAKER_URL, 3000), cancellationToken));
+            tasks.Enqueue(GetRawData<SpearfishingItem>(GetCafeMakerEntityUrl<SpearfishingItem>(CAFE_MAKER_URL, 3000), cancellationToken));
+            tasks.Enqueue(GetRawData<PlaceName>(GetCafeMakerEntityUrl<PlaceName>(CAFE_MAKER_URL, 3000), cancellationToken));
+            await Task.WhenAll(tasks);
+            Logger.Info("Finished CafeMakerDataUpdate in " + (watch.ElapsedMilliseconds / 1000.0) + " s");
+        }
+
+        public override async Task Sync(CancellationToken cancellationToken)
+        {
+            Queue<Task> cacheTasks = new Queue<Task>();
+            cacheTasks.Enqueue(Task.Run(() =>
+            {
+                foreach (Model.Entity.Item item in GatheringTimerResource.ItemCache)
+                {
+                    foreach (Item itemCHS in ItemCache)
+                    {
+                        if (item.ID == itemCHS.ID)
+                        {
+                            item.Name_chs = itemCHS.Name_chs;
+                            break;
+                        }
+
+                    }
+                }
+            }, cancellationToken));
+            cacheTasks.Enqueue(Task.Run(() =>
+            {
+                foreach (Model.Entity.SpearfishingItem spearfishingItem in GatheringTimerResource.SpearfishingItemCache)
+                {
+                    foreach (SpearfishingItem CafeMakerSpearfishingItemsCHS in SpearfishingItemCache)
+                    {
+                        if (spearfishingItem.ID == CafeMakerSpearfishingItemsCHS.ID)
+                        {
+                            spearfishingItem.Description_chs = CafeMakerSpearfishingItemsCHS.Description_chs;
+                            break;
+                        }
+
+                    }
+                }
+            }, cancellationToken));
+            cacheTasks.Enqueue(Task.Run(() =>
+            {
+                foreach (Model.Entity.PlaceName placeName in GatheringTimerResource.PlaceNameCache)
+                {
+                    foreach (PlaceName placeNameCHS in PlaceNameCache)
+                    {
+                        if (placeName.ID == placeNameCHS.ID)
+                        {
+                            placeName.Name_chs = placeNameCHS.Name_chs;
+                            break;
+                        }
+
+                    }
+                }
+            },cancellationToken));
+            await Task.WhenAll(cacheTasks);
+            Queue<Task> updateTasks = new Queue<Task>();
+            updateTasks.Enqueue(GatheringTimerResource.GetSQLiteDatabase().UpdateRowByRow<Model.Entity.Item>(GatheringTimerResource.ItemCache, new List<string> { "Name_chs" }, new List<string> { "ID" }, cancellationToken));
+            updateTasks.Enqueue(GatheringTimerResource.GetSQLiteDatabase().UpdateRowByRow<Model.Entity.SpearfishingItem>(GatheringTimerResource.SpearfishingItemCache, new List<string> { "Description_chs" }, new List<string> { "ID" }, cancellationToken));
+            updateTasks.Enqueue(GatheringTimerResource.GetSQLiteDatabase().UpdateRowByRow<Model.Entity.PlaceName>(GatheringTimerResource.PlaceNameCache, new List<string> { "Name_chs" }, new List<string> { "ID" }, cancellationToken));
+            await Task.WhenAll(cacheTasks);
+            ClearCache();
+            Logger.Info("Sync CHS Finish!");
+        }
     }
 }

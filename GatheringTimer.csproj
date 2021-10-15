@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Constant\Language.cs" />
     <Compile Include="Data\Model\DisplayVo.cs" />
+    <Compile Include="Data\ThirdParty\BaseUpdater.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -79,7 +80,7 @@
     <Compile Include="Data\ThirdParty\CafeMaker\CafeMakerUpdater.cs" />
     <Compile Include="Data\ThirdParty\HuiJiWiki\HuiJiWikiUpdater.cs" />
     <Compile Include="Data\ThirdParty\XIVApi\XIVApiUpdater.cs" />
-    <Compile Include="Data\ThirdParty\Updater.cs" />
+    <Compile Include="Data\ThirdParty\GatheringTimerResource.cs" />
     <Compile Include="GatheringTimerMain.cs" />
     <Compile Include="Data\Database\DataToModel.cs" />
     <Compile Include="Data\Database\SQLiteDatabase.cs" />

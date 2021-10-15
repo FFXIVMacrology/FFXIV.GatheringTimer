@@ -19,12 +19,14 @@ namespace GatheringTimer.Data
 
         public static async Task<bool> Sync()
         {
+            System.Net.ServicePointManager.DefaultConnectionLimit = 20;
+
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 cancellationTokenSource = new CancellationTokenSource();
                 GC.Collect();
             }
-            return await ThirdParty.Updater.SyncRaw(cancellationTokenSource.Token);
+            return await ThirdParty.GatheringTimerResource.SyncRaw(cancellationTokenSource.Token);
         }
 
         public static void SyncCancel()

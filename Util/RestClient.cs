@@ -163,8 +163,8 @@ namespace GatheringTimer.Util
             var responseValue = string.Empty;
             await Task.Run(() =>
             {
+                GC.Collect();
                 var request = (HttpWebRequest)WebRequest.Create(EndPoint + parameters);
-
                 request.Method = Method.ToString();
                 request.ContentLength = 0;
                 request.ContentType = ContentType;
@@ -202,6 +202,8 @@ namespace GatheringTimer.Util
                                 }
                         }
 
+                        request.Abort();
+                        response.Close();
 
                     }
                 }
@@ -211,8 +213,9 @@ namespace GatheringTimer.Util
                     if (!(response is null) && response.StatusCode != HttpStatusCode.NotFound)
                     {
                         Logger.Warn(":\nCan not GetResponse-'" + EndPoint + parameters + "'", ex);
-                    }  
+                    }
                 }
+
             });
             return responseValue;
         }
@@ -263,6 +266,9 @@ namespace GatheringTimer.Util
                                 }
                         }
 
+                        if (responseValue == "") {
+                            Logger.Error("!!!!!!!!!!!");
+                        }
 
                     }
                 }
