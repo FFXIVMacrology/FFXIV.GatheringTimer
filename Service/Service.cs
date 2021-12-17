@@ -1,4 +1,6 @@
-﻿using GatheringTimer.Data.Database;
+﻿using Autofac;
+using GatheringTimer.Data;
+using GatheringTimer.Data.Database;
 using GatheringTimer.Data.Model.Entity;
 using Newtonsoft.Json;
 using System;
@@ -14,7 +16,7 @@ namespace GatheringTimer
     public class Service
     {
 
-        private static readonly Dictionary<String, String> config = Data.DataConfig.ConfigInitialization();
+        private static readonly Dictionary<String, String> config = GatheringTimerMain.GetContainer().Resolve<IDataConfig>().ConfigInitialization();
 
         private static readonly SQLiteDatabase sqliteDatabase = new SQLiteDatabase();
 

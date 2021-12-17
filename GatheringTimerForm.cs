@@ -18,14 +18,16 @@ using System.Threading;
 [assembly: AssemblyTitle("GatheringTimer")]
 [assembly: AssemblyDescription("GatheringTimer")]
 [assembly: AssemblyCompany("ErinnerMO")]
-[assembly: AssemblyVersion("0.0.0.1")]
-[assembly: AssemblyFileVersion("0.0.0.1")]
+[assembly: AssemblyVersion("0.0.0.2")]
+[assembly: AssemblyFileVersion("0.0.0.2")]
 [assembly: AssemblyCopyright("Copyright © 2019-2021 ErinnerMO")]
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
 namespace GatheringTimer
 {
     public class GatheringTimerForm : UserControl, IActPluginV1
     {
+
+        private IGatheringTimerMain gatheringTimerMain = GatheringTimerMain.GetInstance();
 
         private IContainer components;
         #region Designer Created Code (Avoid editing)
@@ -409,7 +411,7 @@ namespace GatheringTimer
                 }
                 try
                 {
-                    await GatheringTimerMain.Sync();
+                    await gatheringTimerMain.Sync();
                 }
                 finally
                 {
@@ -435,7 +437,7 @@ namespace GatheringTimer
                 Logger.Info("Sync Cancel");
                 try
                 {
-                    GatheringTimerMain.SyncCancel();
+                    gatheringTimerMain.SyncCancel();
                 }
                 finally
                 {

@@ -5,11 +5,19 @@ using System.Text;
 
 namespace GatheringTimer.Data
 {
-    public static class DataConfig
-    {
-        public static Dictionary<String, String> dic = new Dictionary<String, String>();
+    public interface IDataConfig:IDependency {
 
-        public static Dictionary<String, String> ConfigInitialization()
+        Dictionary<String, String> ConfigInitialization();
+
+
+    }
+
+    public class DataConfig:IDataConfig
+    {
+        private static Dictionary<String, String> dic = new Dictionary<String, String>();
+
+
+        public Dictionary<String, String> ConfigInitialization()
         {
             DataBase();
             return dic;

@@ -6,15 +6,27 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Data.Model.Entity;
 using GatheringTimer.Util;
 
 namespace GatheringTimer.Data.ThirdParty
 {
-    public static class GatheringTimerResource
+    public interface IGatheringTimerResource:IDependency {
+
+        Task<bool> CacheInitialization(CancellationToken cancellationToken);
+
+        Task<bool> SyncRaw(CancellationToken cancellationToken);
+
+        bool CacheToData();
+
+        void ClearCache();
+    }
+
+    public class GatheringTimerResource:IGatheringTimerResource
     {
-        private static readonly Dictionary<String, String> config = DataConfig.ConfigInitialization();
+        private readonly Dictionary<String, String> config = GatheringTimerMain.GetContainer().Resolve<IDataConfig>().ConfigInitialization();
 
         private static readonly SQLiteDatabase sqliteDatabase = new SQLiteDatabase();
 
@@ -50,7 +62,7 @@ namespace GatheringTimer.Data.ThirdParty
         /// <summary>
         /// Initialize DataBase
         /// </summary>
-        public static async Task<bool> CacheInitialization(CancellationToken cancellationToken)
+        public async Task<bool> CacheInitialization(CancellationToken cancellationToken)
         {
             Logger.Info("Cache File Initializing");
             String path = config["Path"];
@@ -87,10 +99,28 @@ namespace GatheringTimer.Data.ThirdParty
 
         }
 
+        public async Task<bool> SyncRaw(CancellationToken cancellationToken)
+        {
+
+            await CacheInitialization(cancellationToken);
+
+            Task rawUpdate = XIVApi.XIVApiUpdater.Updater().DataUpdate(cancellationToken);
+            Task chsUpdate = CafeMaker.CafeMakerUpdater.Updater().DataUpdate(cancellationToken);
+            Task hjwUpdate = HuiJiWiki.HuiJiWikiUpdater.Updater().DataUpdate(cancellationToken);
+            await Task.WhenAll(rawUpdate, chsUpdate, hjwUpdate);
+
+            await XIVApi.XIVApiUpdater.Updater().Sync(cancellationToken);
+            await CafeMaker.CafeMakerUpdater.Updater().Sync(cancellationToken);
+            await HuiJiWiki.HuiJiWikiUpdater.Updater().Sync(cancellationToken);
+            ClearCache();
+            Logger.Info("Sync Cache Finish!");
+            return true;
+        }
+
         /// <summary>
         /// Initialize DataBase
         /// </summary>
-        public static bool CacheToData()
+        public bool CacheToData()
         {
             Logger.Info("Data File Init");
             String path = config["Path"];
@@ -124,7 +154,7 @@ namespace GatheringTimer.Data.ThirdParty
 
         }
 
-        public static void ClearCache()
+        public void ClearCache()
         {
             ItemCache = default;
             GatheringItemCache = default;
@@ -139,27 +169,7 @@ namespace GatheringTimer.Data.ThirdParty
             GC.Collect();
         }
 
-        public static async Task<bool> SyncRaw(CancellationToken cancellationToken)
-        {
+       
 
-            await CacheInitialization(cancellationToken);
-
-            Task rawUpdate = XIVApi.XIVApiUpdater.Updater().DataUpdate(cancellationToken);
-            Task chsUpdate = CafeMaker.CafeMakerUpdater.Updater().DataUpdate(cancellationToken);
-            Task hjwUpdate = HuiJiWiki.HuiJiWikiUpdater.Updater().DataUpdate(cancellationToken);
-            await Task.WhenAll(rawUpdate, chsUpdate, hjwUpdate);
-
-            await XIVApi.XIVApiUpdater.Updater().Sync(cancellationToken);
-            await CafeMaker.CafeMakerUpdater.Updater().Sync(cancellationToken);
-            await HuiJiWiki.HuiJiWikiUpdater.Updater().Sync(cancellationToken);
-            ClearCache();
-            Logger.Info("Sync Cache Finish!");
-            return true;
-        }
-
-        public static async Task SyncDataBaseOnline()
-        {
-
-        }
     }
 }

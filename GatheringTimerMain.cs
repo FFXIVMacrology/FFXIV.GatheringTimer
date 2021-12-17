@@ -1,39 +1,79 @@
-﻿using GatheringTimer.Data;
+﻿using Autofac;
+using GatheringTimer.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GatheringTimer
 {
 
-    public class GatheringTimerMain
+    public interface IDependency { }
+
+    public interface IGatheringTimerMain:IDependency {
+
+        Task Sync();
+
+        void SyncCancel();
+    }
+
+
+    public class GatheringTimerMain:IGatheringTimerMain
     {
-        public static async Task Sync()
+        private static IContainer container;
+
+        private static void Init()
         {
+            var builder = new ContainerBuilder();
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).Where(
+                type => typeof(IDependency).IsAssignableFrom(type) && !type.IsAbstract)
+                .AsImplementedInterfaces().InstancePerLifetimeScope();
+            container = builder.Build();
+
+        }
+
+        public static IContainer GetContainer() {
+            if (null == container)
+            {
+                Init();
+            }
+            return container;
+        }
+
+        public static IGatheringTimerMain GetInstance() {
+            if ( null == container ) {
+                Init();
+            }
+            return container.Resolve<IGatheringTimerMain>();
+        }
+
+        public async Task Sync() {
             try
             {
                 Logger.Info("Sync Start");
-                await DataManagement.Sync();
+                var dataManagement = container.Resolve<IDataManagement>();
+                await dataManagement.Sync();
             }
             catch (TaskCanceledException)
             {
                 Logger.Info("Sync Cacnel");
             }
-            catch (Exception ex) {
-                Logger.Error("Sync Error",ex);
+            catch (Exception ex)
+            {
+                Logger.Error("Sync Error", ex);
             }
             finally
             {
                 Logger.Info("Sync Finish");
             }
-
         }
 
-        public static void SyncCancel()
+        public void SyncCancel()
         {
-            DataManagement.SyncCancel();
+            var dataManagement = container.Resolve<IDataManagement>();
+            dataManagement.SyncCancel();
         }
 
         public static async Task GetItems(GatheringTimerForm gatheringTimerForm, String searchStr)
