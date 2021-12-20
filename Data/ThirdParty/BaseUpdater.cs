@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -74,9 +75,9 @@ namespace GatheringTimer.Data.ThirdParty
             await Task.Run(()=> {
                 List<Q> cacheEntities = (List<Q>)updater.GetType().GetProperty(typeof(T).Name + "Cache").GetValue(updater);
                 entities = ConvertTo<T, Q>(cacheEntities);
-                IntoStaticCache(typeof(GatheringTimerResource), entities);
+                IntoCache(GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>(), entities);
             },cancellationToken);
-            await GatheringTimerResource.GetSQLiteDatabase().InsertRowByRow<T>(entities, cancellationToken);
+            await GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().GetSQLiteDatabase().InsertRowByRow<T>(entities, cancellationToken);
         }
 
     }

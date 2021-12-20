@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GatheringTimer.Data.Database
 {
-    class DataToModel
+    public class DataToModel
     {
         /// <summary>
         /// Type enum

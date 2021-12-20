@@ -15,6 +15,29 @@ namespace GatheringTimer.Data.ThirdParty
 {
     public interface IGatheringTimerResource:IDependency {
 
+        List<Item> ItemCache { get; set; }
+
+        List<GatheringItem> GatheringItemCache { get; set; }
+
+        List<SpearfishingItem> SpearfishingItemCache { get; set; }
+
+        List<GatheringPointBase> GatheringPointBaseCache { get; set; }
+
+        List<GatheringPointBaseExtension> GatheringPointBaseExtensionCache { get; set; }
+
+        List<TimeConditionExtension> TimeConditionExtensionCache { get; set; }
+
+        List<GatheringPoint> GatheringPointCache { get; set; }
+
+        List<PlaceName> PlaceNameCache { get; set; }
+
+        List<TerritoryType> TerritoryTypeCache { get; set; }
+
+        List<Map> MapCache { get; set; }
+
+
+        ISQLiteDatabase GetSQLiteDatabase();
+
         Task<bool> CacheInitialization(CancellationToken cancellationToken);
 
         Task<bool> SyncRaw(CancellationToken cancellationToken);
@@ -28,25 +51,25 @@ namespace GatheringTimer.Data.ThirdParty
     {
         private readonly Dictionary<String, String> config = GatheringTimerMain.GetContainer().Resolve<IDataConfig>().ConfigInitialization();
 
-        private static readonly SQLiteDatabase sqliteDatabase = new SQLiteDatabase();
+        private readonly ISQLiteDatabase sqliteDatabase = GatheringTimerMain.GetContainer().Resolve<ISQLiteDatabase>();
 
-        public static List<Item> ItemCache { get; set; } = default;
-        public static List<GatheringItem> GatheringItemCache { get; set; } = default;
-        public static List<SpearfishingItem> SpearfishingItemCache { get; set; } = default;
-        public static List<GatheringPointBase> GatheringPointBaseCache { get; set; } = default;
-        public static List<GatheringPointBaseExtension> GatheringPointBaseExtensionCache { get; set; } = default;
-        public static List<TimeConditionExtension> TimeConditionExtensionCache { get; set; } = default;
-        public static List<GatheringPoint> GatheringPointCache { get; set; } = default;
-        public static List<PlaceName> PlaceNameCache { get; set; } = default;
-        public static List<TerritoryType> TerritoryTypeCache { get; set; } = default;
-        public static List<Map> MapCache { get; set; } = default;
+        public List<Item> ItemCache { get; set; } = default;
+        public List<GatheringItem> GatheringItemCache { get; set; } = default;
+        public List<SpearfishingItem> SpearfishingItemCache { get; set; } = default;
+        public List<GatheringPointBase> GatheringPointBaseCache { get; set; } = default;
+        public List<GatheringPointBaseExtension> GatheringPointBaseExtensionCache { get; set; } = default;
+        public List<TimeConditionExtension> TimeConditionExtensionCache { get; set; } = default;
+        public List<GatheringPoint> GatheringPointCache { get; set; } = default;
+        public List<PlaceName> PlaceNameCache { get; set; } = default;
+        public List<TerritoryType> TerritoryTypeCache { get; set; } = default;
+        public List<Map> MapCache { get; set; } = default;
 
-        public static SQLiteDatabase GetSQLiteDatabase()
+        public ISQLiteDatabase GetSQLiteDatabase()
         {
             return sqliteDatabase;
         }
 
-        private static async Task<bool> CreateTable<T>(CancellationToken cancellationToken)
+        private async Task<bool> CreateTable<T>(CancellationToken cancellationToken)
         {
 
             Stopwatch watch = new Stopwatch();

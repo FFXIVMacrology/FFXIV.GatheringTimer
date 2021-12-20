@@ -14,7 +14,45 @@ using static GatheringTimer.Logger;
 
 namespace GatheringTimer.Data.Database
 {
-    public class SQLiteDatabase
+    public interface ISQLiteDatabase:IDependency {
+
+        void SetDataSource(String dataSource);
+
+        bool CheckDataSource();
+
+        bool CreateDatabase();
+
+        bool DeleteDatabase();
+
+        bool ExecuteSQL(List<String> sqlList);
+
+        Task<bool> CreateTable<T>(CancellationToken cancellationToken);
+
+        Task<bool> DeleteTable<T>(CancellationToken cancellationToken);
+
+        Task<bool> AddColumn<T>(String column, CancellationToken cancellationToken);
+
+        Task<bool> InsertRowByRow<T>(List<T> list, CancellationToken cancellationToken);
+
+        Task<bool> InsertRowUnion<T>(List<T> list, int unionLimit, CancellationToken cancellationToken);
+
+        Task<bool> Delete<T>(String condition, CancellationToken cancellationToken);
+
+        Task<bool> Update<T>(String setValues, String condition, CancellationToken cancellationToken);
+
+        Task<bool> UpdateRowByRow<T>(List<T> list, List<String> setColumnList, List<String> conditionColumnList, CancellationToken cancellationToken);
+
+        DataTable Select(string sql);
+
+        Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t, List<string> conditionKeywordList, int? limit, CancellationToken cancellationToken);
+
+        Task<List<T>> Select<T>(List<string> conditionColumnList, List<string> conditionList, T t, CancellationToken cancellationToken);
+
+        Task<List<T>> Select<T>(List<string> conditionList, T t, CancellationToken cancellationToken);
+
+    }
+
+    public class SQLiteDatabase:ISQLiteDatabase
     {
 
         private String dataSource;
