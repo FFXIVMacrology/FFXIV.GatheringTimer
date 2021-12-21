@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constant\Language.cs" />
+    <Compile Include="Container\Container.cs" />
     <Compile Include="Data\DataManagement.cs" />
     <Compile Include="Data\Model\DisplayVo.cs" />
     <Compile Include="Data\ThirdParty\BaseUpdater.cs" />

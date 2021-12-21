@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Threading;
 using static GatheringTimer.Logger;
+using GatheringTimer.Container;
 
 namespace GatheringTimer.Data.Database
 {
@@ -645,7 +646,7 @@ namespace GatheringTimer.Data.Database
                 if (!IsContains(columnList, setColumnList) || !IsContains(columnList, conditionColumnList))
                 {
                     Logger.Error("setColumnList or conditionColumnList is not contained with list column", null);
-                    return false;
+                    continue;
                 }
                 int count = 0;
                 foreach (String value in valueList)

@@ -16,9 +16,9 @@ namespace GatheringTimer
     public class Service
     {
 
-        private static readonly Dictionary<String, String> config = GatheringTimerMain.GetContainer().Resolve<IDataConfig>().ConfigInitialization();
+        private static readonly Dictionary<String, String> config = Container.Container.GetContainer().Resolve<IDataConfig>().ConfigInitialization();
 
-        private static readonly SQLiteDatabase sqliteDatabase = new SQLiteDatabase();
+        private static readonly ISQLiteDatabase sqliteDatabase = Container.Container.GetContainer().Resolve<ISQLiteDatabase>();
 
         private static List<Item> itemCache = default;
         private static List<GatheringItem> gatheringItemCache = default;
@@ -92,7 +92,7 @@ namespace GatheringTimer
             }
         }
 
-        public static SQLiteDatabase GetSQLiteDatabase()
+        public static ISQLiteDatabase GetSQLiteDatabase()
         {
             return sqliteDatabase;
         }

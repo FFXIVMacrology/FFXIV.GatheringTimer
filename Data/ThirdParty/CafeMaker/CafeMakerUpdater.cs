@@ -143,7 +143,7 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
             Queue<Task> cacheTasks = new Queue<Task>();
             cacheTasks.Enqueue(Task.Run(() =>
             {
-                foreach (Model.Entity.Item item in GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().ItemCache)
+                foreach (Model.Entity.Item item in Container.Container.GetContainer().Resolve<IGatheringTimerResource>().ItemCache)
                 {
                     foreach (Item itemCHS in ItemCache)
                     {
@@ -158,7 +158,7 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
             }, cancellationToken));
             cacheTasks.Enqueue(Task.Run(() =>
             {
-                foreach (Model.Entity.SpearfishingItem spearfishingItem in GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().SpearfishingItemCache)
+                foreach (Model.Entity.SpearfishingItem spearfishingItem in Container.Container.GetContainer().Resolve<IGatheringTimerResource>().SpearfishingItemCache)
                 {
                     foreach (SpearfishingItem CafeMakerSpearfishingItemsCHS in SpearfishingItemCache)
                     {
@@ -173,7 +173,7 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
             }, cancellationToken));
             cacheTasks.Enqueue(Task.Run(() =>
             {
-                foreach (Model.Entity.PlaceName placeName in GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().PlaceNameCache)
+                foreach (Model.Entity.PlaceName placeName in Container.Container.GetContainer().Resolve<IGatheringTimerResource>().PlaceNameCache)
                 {
                     foreach (PlaceName placeNameCHS in PlaceNameCache)
                     {
@@ -188,9 +188,9 @@ namespace GatheringTimer.Data.ThirdParty.CafeMaker
             },cancellationToken));
             await Task.WhenAll(cacheTasks);
             Queue<Task> updateTasks = new Queue<Task>();
-            updateTasks.Enqueue(GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().GetSQLiteDatabase().UpdateRowByRow<Model.Entity.Item>(GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().ItemCache, new List<string> { "Name_chs" }, new List<string> { "ID" }, cancellationToken));
-            updateTasks.Enqueue(GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().GetSQLiteDatabase().UpdateRowByRow<Model.Entity.SpearfishingItem>(GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().SpearfishingItemCache, new List<string> { "Description_chs" }, new List<string> { "ID" }, cancellationToken));
-            updateTasks.Enqueue(GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().GetSQLiteDatabase().UpdateRowByRow<Model.Entity.PlaceName>(GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().PlaceNameCache, new List<string> { "Name_chs" }, new List<string> { "ID" }, cancellationToken));
+            updateTasks.Enqueue(Container.Container.GetContainer().Resolve<IGatheringTimerResource>().GetSQLiteDatabase().UpdateRowByRow<Model.Entity.Item>(Container.Container.GetContainer().Resolve<IGatheringTimerResource>().ItemCache, new List<string> { "Name_chs" }, new List<string> { "ID" }, cancellationToken));
+            updateTasks.Enqueue(Container.Container.GetContainer().Resolve<IGatheringTimerResource>().GetSQLiteDatabase().UpdateRowByRow<Model.Entity.SpearfishingItem>(Container.Container.GetContainer().Resolve<IGatheringTimerResource>().SpearfishingItemCache, new List<string> { "Description_chs" }, new List<string> { "ID" }, cancellationToken));
+            updateTasks.Enqueue(Container.Container.GetContainer().Resolve<IGatheringTimerResource>().GetSQLiteDatabase().UpdateRowByRow<Model.Entity.PlaceName>(Container.Container.GetContainer().Resolve<IGatheringTimerResource>().PlaceNameCache, new List<string> { "Name_chs" }, new List<string> { "ID" }, cancellationToken));
             await Task.WhenAll(cacheTasks);
             ClearCache();
             Logger.Info("Sync CHS Finish!");

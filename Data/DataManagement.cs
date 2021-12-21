@@ -11,6 +11,7 @@ using GatheringTimer.Data.Model.Entity;
 using System.Threading;
 using Autofac;
 using GatheringTimer.Data.ThirdParty;
+using GatheringTimer.Container;
 
 namespace GatheringTimer.Data
 {
@@ -36,7 +37,10 @@ namespace GatheringTimer.Data
                 cancellationTokenSource = new CancellationTokenSource();
                 GC.Collect();
             }
-            return await GatheringTimerMain.GetContainer().Resolve<IGatheringTimerResource>().SyncRaw(cancellationTokenSource.Token);
+            if (await Container.Container.GetContainer().Resolve<IGatheringTimerResource>().SyncRaw(cancellationTokenSource.Token)) {
+               return Container.Container.GetContainer().Resolve<IGatheringTimerResource>().CacheToData();
+            }
+            return false;
         }
 
         public void SyncCancel()

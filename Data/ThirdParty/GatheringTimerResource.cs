@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using GatheringTimer.Container;
 using GatheringTimer.Data.Database;
 using GatheringTimer.Data.Model.Entity;
 using GatheringTimer.Util;
@@ -49,9 +50,9 @@ namespace GatheringTimer.Data.ThirdParty
 
     public class GatheringTimerResource:IGatheringTimerResource
     {
-        private readonly Dictionary<String, String> config = GatheringTimerMain.GetContainer().Resolve<IDataConfig>().ConfigInitialization();
+        private readonly Dictionary<String, String> config = Container.Container.GetContainer().Resolve<IDataConfig>().ConfigInitialization();
 
-        private readonly ISQLiteDatabase sqliteDatabase = GatheringTimerMain.GetContainer().Resolve<ISQLiteDatabase>();
+        private readonly ISQLiteDatabase sqliteDatabase = Container.Container.GetContainer().Resolve<ISQLiteDatabase>();
 
         public List<Item> ItemCache { get; set; } = default;
         public List<GatheringItem> GatheringItemCache { get; set; } = default;

@@ -2,58 +2,35 @@
 using GatheringTimer.Data;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
+using GatheringTimer.Container;
+
 
 namespace GatheringTimer
 {
-
-    public interface IDependency { }
 
     public interface IGatheringTimerMain:IDependency {
 
         Task Sync();
 
         void SyncCancel();
+
     }
 
 
     public class GatheringTimerMain:IGatheringTimerMain
     {
-        private static IContainer container;
+        public static IGatheringTimerMain GetInstance() { 
+      
+            return Container.Container.GetContainer().Resolve<IGatheringTimerMain>();
 
-        private static void Init()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).Where(
-                type => typeof(IDependency).IsAssignableFrom(type) && !type.IsAbstract)
-                .AsImplementedInterfaces().InstancePerLifetimeScope();
-            container = builder.Build();
-
-        }
-
-        public static IContainer GetContainer() {
-            if (null == container)
-            {
-                Init();
-            }
-            return container;
-        }
-
-        public static IGatheringTimerMain GetInstance() {
-            if ( null == container ) {
-                Init();
-            }
-            return container.Resolve<IGatheringTimerMain>();
         }
 
         public async Task Sync() {
             try
             {
                 Logger.Info("Sync Start");
-                var dataManagement = container.Resolve<IDataManagement>();
+                var dataManagement = Container.Container.GetContainer().Resolve<IDataManagement>();
                 await dataManagement.Sync();
             }
             catch (TaskCanceledException)
@@ -72,7 +49,7 @@ namespace GatheringTimer
 
         public void SyncCancel()
         {
-            var dataManagement = container.Resolve<IDataManagement>();
+            var dataManagement = Container.Container.GetContainer().Resolve<IDataManagement>();
             dataManagement.SyncCancel();
         }
 
@@ -81,7 +58,7 @@ namespace GatheringTimer
 
             try
             {
-                List<Data.Model.DisplayVo.Item> items = await Service.GetItems(searchStr);
+              List<Data.Model.DisplayVo.Item> items = await Service.GetItems(searchStr);
                 gatheringTimerForm.ItemList_SetContent(items);
             }
             catch (Exception ex)
